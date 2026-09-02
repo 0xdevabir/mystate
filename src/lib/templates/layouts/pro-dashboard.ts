@@ -7,7 +7,6 @@ import {
   areaChart,
   rankBadge,
   languageBarDetailed,
-  statRow,
   streakCard,
 } from "../core/charts";
 
@@ -81,7 +80,7 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
     ${card(24 + cardW + 8, 210, cardW - 8, 170, palette)}
     ${text(36 + cardW + 8, 230, "Most Used Languages", { fill: palette.text, size: 12, weight: 700 })}
-    ${languageBarDetailed(stats.topLanguages, 36 + cardW + 8, 248, cardW - 48, palette)}
+    ${languageBarDetailed(stats.topLanguages, 36 + cardW + 8, 248, cardW - 48, palette, 4)}
 
     ${streakCard(24, bottomY, streakW, 88, "✦", "Total Contributions", formatNumber(stats.totalLifetimeContributions), `${joined} – Present`, palette, palette.accent)}
     ${streakCard(28 + streakW, bottomY, streakW, 88, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, palette.highlight)}
@@ -100,4 +99,3 @@ export const proDashboardMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
-

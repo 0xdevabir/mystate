@@ -14,6 +14,8 @@ import { languageExpert, languageExpertMeta } from "./layouts/language-expert";
 import { cleanSlate, cleanSlateMeta } from "./layouts/clean-slate";
 import { streakHero, streakHeroMeta } from "./layouts/streak-hero";
 import { heatmapPro, heatmapProMeta } from "./layouts/heatmap-pro";
+import { CARD_TEMPLATE_ENTRIES } from "./layouts/cards";
+import { PAIR_TEMPLATE_ENTRIES } from "./layouts/pairs";
 
 export const TEMPLATES: Record<
   string,
@@ -33,11 +35,19 @@ export const TEMPLATES: Record<
   [radialHubMeta.id]: { meta: radialHubMeta, render: radialHub },
   [activityStackMeta.id]: { meta: activityStackMeta, render: activityStack },
   [compactStripMeta.id]: { meta: compactStripMeta, render: compactStrip },
+  ...Object.fromEntries(
+    CARD_TEMPLATE_ENTRIES.map((t) => [t.meta.id, { meta: t.meta, render: t.render }]),
+  ),
+  ...Object.fromEntries(
+    PAIR_TEMPLATE_ENTRIES.map((t) => [t.meta.id, { meta: t.meta, render: t.render }]),
+  ),
 };
 
 export const TEMPLATE_LIST = Object.values(TEMPLATES).map((t) => t.meta);
 export const PREMIUM_TEMPLATES = TEMPLATE_LIST.filter((t) => t.category === "premium");
 export const CLASSIC_TEMPLATES = TEMPLATE_LIST.filter((t) => t.category === "classic");
+export const CARD_TEMPLATES = TEMPLATE_LIST.filter((t) => t.category === "card");
+export const PAIR_TEMPLATES = TEMPLATE_LIST.filter((t) => t.category === "pair");
 export const DEFAULT_TEMPLATE = "pro-dashboard";
 
 export function renderTemplate(
@@ -57,3 +67,4 @@ export function getTemplateDimensions(templateId: string): {
   const template = TEMPLATES[templateId] ?? TEMPLATES[DEFAULT_TEMPLATE];
   return { width: template.meta.width, height: template.meta.height };
 }
+

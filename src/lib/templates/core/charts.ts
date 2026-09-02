@@ -119,33 +119,59 @@ export function languageBarDetailed(
   y: number,
   w: number,
   palette: ThemePalette,
+  maxItems = 4,
 ): string {
   if (languages.length === 0) {
-    return text(x, y, "No language data", { fill: palette.textMuted, size: 10 });
+    return text(x, y + 10, "No language data", { fill: palette.textMuted, size: 10 });
   }
 
-  const barH = 10;
+  const items = languages.slice(0, maxItems);
+  const total = items.reduce((s, l) => s + l.percentage, 0) || 100;
+  const barH = 8;
   let offset = 0;
-  const segments = languages.map((lang) => {
-    const segW = Math.max((lang.percentage / 100) * w, 3);
-    const seg = `<rect x="${x + offset}" y="${y}" width="${segW}" height="${barH}" rx="3" fill="${lang.color}"/>`;
+  const segments = items.map((lang) => {
+    const segW = Math.max((lang.percentage / total) * w, 2);
+    const seg = `<rect x="${x + offset}" y="${y}" width="${segW}" height="${barH}" rx="2" fill="${lang.color}"/>`;
     offset += segW;
     return seg;
   });
 
-  const cols = 2;
-  const labels = languages.map((lang, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const lx = x + col * (w / 2);
-    const ly = y + 22 + row * 18;
-    return `
-      <circle cx="${lx}" cy="${ly}" r="4" fill="${lang.color}"/>
-      ${text(lx + 10, ly + 4, `${lang.name}`, { fill: palette.text, size: 10, weight: 600 })}
-      ${text(lx + 90, ly + 4, `${lang.percentage}%`, { fill: palette.textMuted, size: 10, anchor: "end" })}`;
-  });
+  const labels = items
+    .map((lang, i) => {
+      const ly = y + 20 + i * 16;
+      return `
+      <circle cx="${x}" cy="${ly}" r="3.5" fill="${lang.color}"/>
+      ${text(x + 10, ly + 4, lang.name, { fill: palette.text, size: 9, weight: 600 })}
+      ${text(x + w, ly + 4, `${lang.percentage}%`, { fill: palette.textMuted, size: 9, anchor: "end" })}`;
+    })
+    .join("");
 
-  return `${segments.join("")}${labels.join("")}`;
+  return `${segments.join("")}${labels}`;
+}
+
+export function languageListRows(
+  languages: GitHubStats["topLanguages"],
+  x: number,
+  y: number,
+  w: number,
+  palette: ThemePalette,
+  rowH = 24,
+  maxItems = 6,
+): string {
+  const items = languages.slice(0, maxItems);
+  const barMaxW = w - 130;
+  return items
+    .map((lang, i) => {
+      const ly = y + i * rowH;
+      const barW = Math.max((lang.percentage / 100) * barMaxW, 2);
+      return `
+      <circle cx="${x}" cy="${ly}" r="4" fill="${lang.color}"/>
+      ${text(x + 12, ly + 4, lang.name, { fill: palette.text, size: 10, weight: 600 })}
+      ${text(x + 88, ly + 4, `${lang.percentage}%`, { fill: palette.textMuted, size: 10, anchor: "end" })}
+      <rect x="${x + 100}" y="${ly - 6}" width="${barMaxW}" height="6" rx="2" fill="${palette.border}" opacity="0.35"/>
+      <rect x="${x + 100}" y="${ly - 6}" width="${barW}" height="6" rx="2" fill="${lang.color}"/>`;
+    })
+    .join("");
 }
 
 export function donutChart(

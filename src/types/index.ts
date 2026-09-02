@@ -84,7 +84,7 @@ export interface TemplateMeta {
   width: number;
   height: number;
   previewBg: string;
-  category: "premium" | "classic";
+  category: "premium" | "classic" | "card" | "pair";
 }
 
 export type TemplateRenderer = (
