@@ -1,0 +1,51 @@
+import { NextRequest, NextResponse } from "next/server";
+import { fetchGitHubStats } from "@/lib/github";
+import { DEFAULT_THEME, renderTemplate } from "@/lib/templates";
+
+export const runtime = "nodejs";
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const username = searchParams.get("username");
+  const theme = searchParams.get("theme") ?? DEFAULT_THEME;
+
+  if (!username) {
+    return new NextResponse("Missing username parameter", { status: 400 });
+  }
+
+  try {
+    const stats = await fetchGitHubStats(username);
+    const svg = renderTemplate(theme, stats);
+
+    return new NextResponse(svg, {
+      status: 200,
+      headers: {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "UNKNOWN";
+
+    if (message === "USER_NOT_FOUND") {
+      return errorSvg("User not found", 404);
+    }
+    if (message === "INVALID_USERNAME") {
+      return errorSvg("Invalid username", 400);
+    }
+
+    return errorSvg("Failed to fetch stats", 500);
+  }
+}
+
+function errorSvg(message: string, status: number) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="495" height="80" viewBox="0 0 495 80">
+    <rect width="495" height="80" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+    <text x="247" y="45" fill="#ef4444" font-size="14" font-family="system-ui, sans-serif" text-anchor="middle">${message}</text>
+  </svg>`;
+
+  return new NextResponse(svg, {
+    status,
+    headers: { "Content-Type": "image/svg+xml" },
+  });
+}
