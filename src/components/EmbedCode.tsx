@@ -8,17 +8,18 @@ import { SectionLabel, SectionTitle } from "./SectionHeader";
 
 interface EmbedCodeProps {
   username: string;
+  template: string;
   theme: string;
 }
 
-export function EmbedCode({ username, theme }: EmbedCodeProps) {
+export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "html">("markdown");
 
   if (!username) return null;
 
-  const markdown = buildMarkdown(username, theme);
-  const html = `<img src="${buildEmbedUrl(username, theme)}" alt="My GitHub Stats" />`;
+  const markdown = buildMarkdown(username, template, theme);
+  const html = `<img src="${buildEmbedUrl(username, template, theme)}" alt="My GitHub Stats" />`;
   const code = format === "markdown" ? markdown : html;
 
   async function handleCopy() {
@@ -34,11 +35,16 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
       transition={{ duration: 0.6 }}
       className="bg-dark px-6 py-24 md:py-28"
     >
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-5xl">
         <SectionLabel>Embed Code</SectionLabel>
-        <SectionTitle dark className="mb-12">
+        <SectionTitle dark className="mb-4">
           Copy & paste.
         </SectionTitle>
+        <p className="mb-10 text-[14px] text-bg/50">
+          Layout: <span className="font-bold text-accent">{template}</span>
+          {" · "}
+          Theme: <span className="font-bold text-accent">{theme}</span>
+        </p>
 
         <div className="rounded-2xl border border-bg/10 bg-ink p-6 md:p-8">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -65,13 +71,13 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
           </div>
 
           <div className="relative">
-            <pre className="overflow-x-auto rounded-xl bg-dark/60 p-5 font-mono text-[13px] leading-relaxed text-highlight">
+            <pre className="overflow-x-auto rounded-xl bg-dark/60 p-5 font-mono text-[12px] leading-relaxed text-highlight sm:text-[13px]">
               <code>{code}</code>
             </pre>
             <button
               type="button"
               onClick={handleCopy}
-              className="group absolute right-3 top-3 flex items-center gap-2 overflow-hidden rounded-full bg-bg px-4 py-2 text-[12px] font-bold text-dark transition-all hover:-translate-y-0.5 active:scale-95"
+              className="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-bg px-4 py-2 text-[12px] font-bold text-dark transition-all hover:-translate-y-0.5 active:scale-95"
             >
               <AnimatePresence mode="wait">
                 {copied ? (
@@ -82,7 +88,7 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
                     exit={{ opacity: 0, scale: 0.8 }}
                     className="flex items-center gap-1.5"
                   >
-                    <Check className="h-3.5 w-3.5 text-dark" />
+                    <Check className="h-3.5 w-3.5" />
                     Copied
                   </motion.span>
                 ) : (
@@ -109,12 +115,12 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
             <div className="h-px flex-1 bg-bg/10" />
           </div>
 
-          <div className="mt-6 flex justify-center overflow-hidden rounded-xl bg-bg/5 p-4">
+          <div className="mt-6 overflow-x-auto rounded-xl bg-bg/5 p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={buildEmbedUrl(username, theme)}
+              src={buildEmbedUrl(username, template, theme)}
               alt="Stats preview"
-              className="max-w-full rounded-lg"
+              className="mx-auto max-w-none rounded-lg"
             />
           </div>
         </div>

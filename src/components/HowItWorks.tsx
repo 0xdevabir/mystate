@@ -11,15 +11,15 @@ const steps = [
   },
   {
     num: "02",
-    title: "Template.",
+    title: "Layout.",
     description:
-      "Browse nine distinct card designs. Each one previews with your real data before you commit.",
+      "Eight unique layouts rearrange the same full stats — profile card, dashboard, terminal, grid, banner, radial, stack, or strip.",
   },
   {
     num: "03",
-    title: "Embed.",
+    title: "Theme.",
     description:
-      "Copy a single markdown line into your README. Your stats update automatically from our servers.",
+      "Pick a color palette — dark, light, dark green, ocean, and more. Same content, different mood.",
   },
 ];
 
@@ -72,3 +72,4 @@ export function HowItWorks() {
     </section>
   );
 }
+

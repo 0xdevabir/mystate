@@ -8,11 +8,13 @@ import { TemplateGallery } from "@/components/TemplateGallery";
 import { EmbedCode } from "@/components/EmbedCode";
 import { Footer } from "@/components/Footer";
 import { HowItWorks } from "@/components/HowItWorks";
-import { TEMPLATE_LIST, DEFAULT_THEME } from "@/lib/templates";
+import { TEMPLATE_LIST, DEFAULT_TEMPLATE } from "@/lib/templates";
+import { DEFAULT_THEME } from "@/lib/themes";
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const [activeUsername, setActiveUsername] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_TEMPLATE);
   const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,12 +67,18 @@ export default function Home() {
         <TemplateGallery
           templates={TEMPLATE_LIST}
           username={activeUsername}
+          selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
+          onSelectTemplate={setSelectedTemplate}
           onSelectTheme={setSelectedTheme}
         />
 
         {activeUsername && (
-          <EmbedCode username={activeUsername} theme={selectedTheme} />
+          <EmbedCode
+            username={activeUsername}
+            template={selectedTemplate}
+            theme={selectedTheme}
+          />
         )}
       </main>
       <Footer />
