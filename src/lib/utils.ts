@@ -19,10 +19,23 @@ export function getBaseUrl(): string {
   return "http://localhost:3000";
 }
 
-export function buildEmbedUrl(username: string, theme: string): string {
-  return `${getBaseUrl()}/api/stats?username=${encodeURIComponent(username)}&theme=${encodeURIComponent(theme)}`;
+export function buildEmbedUrl(
+  username: string,
+  template: string,
+  theme: string,
+): string {
+  const params = new URLSearchParams({
+    username,
+    template,
+    theme,
+  });
+  return `${getBaseUrl()}/api/stats?${params.toString()}`;
 }
 
-export function buildMarkdown(username: string, theme: string): string {
-  return `![MyState](${buildEmbedUrl(username, theme)})`;
+export function buildMarkdown(
+  username: string,
+  template: string,
+  theme: string,
+): string {
+  return `![MyState](${buildEmbedUrl(username, template, theme)})`;
 }

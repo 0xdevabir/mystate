@@ -9,17 +9,7 @@ export async function GET(
 
   try {
     const stats = await fetchGitHubStats(username);
-    return NextResponse.json({
-      username: stats.username,
-      name: stats.name,
-      avatar: stats.avatar,
-      publicRepos: stats.publicRepos,
-      followers: stats.followers,
-      following: stats.following,
-      totalStars: stats.totalStars,
-      totalForks: stats.totalForks,
-      topLanguages: stats.topLanguages,
-    });
+    return NextResponse.json(stats);
   } catch (error) {
     const message = error instanceof Error ? error.message : "UNKNOWN";
 
