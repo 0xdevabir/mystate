@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { CustomThemeColors, TemplateMeta } from "@/types";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 import { TemplateCard } from "./TemplateCard";
 import { ThemePicker } from "./ThemePicker";
 import { TemplateUseModal } from "./TemplateUseModal";
+import { buildPreviewUrl } from "@/lib/utils";
+import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
 import {
   PREMIUM_TEMPLATES,
   CLASSIC_TEMPLATES,
@@ -69,6 +71,7 @@ interface TemplateGalleryProps {
   onSelectTemplate: (id: string) => void;
   onSelectTheme: (id: string) => void;
   onCustomColorsChange: (colors: CustomThemeColors) => void;
+  onPreviewsReady?: () => void;
 }
 
 export function TemplateGallery({
@@ -80,6 +83,7 @@ export function TemplateGallery({
   onSelectTemplate,
   onSelectTheme,
   onCustomColorsChange,
+  onPreviewsReady,
 }: TemplateGalleryProps) {
   const [modalTemplate, setModalTemplate] = useState<TemplateMeta | null>(null);
   const [activeCategory, setActiveCategory] = useState<TemplateCategory>("premium");
@@ -89,13 +93,53 @@ export function TemplateGallery({
     [activeCategory],
   );
 
+  useEffect(() => {
+    if (!username || !onPreviewsReady) return;
+
+    let cancelled = false;
+    const urls = activeConfig.templates.map((template) =>
+      buildPreviewUrl(
+        username,
+        template.id,
+        selectedTheme,
+        true,
+        selectedTheme === CUSTOM_THEME_ID ? customColors : undefined,
+      ),
+    );
+
+    let loaded = 0;
+    const finish = () => {
+      loaded += 1;
+      if (!cancelled && loaded >= urls.length) {
+        onPreviewsReady();
+      }
+    };
+
+    for (const url of urls) {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = finish;
+      img.onerror = finish;
+      img.src = url;
+    }
+
+    const fallback = window.setTimeout(() => {
+      if (!cancelled) onPreviewsReady();
+    }, 12000);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(fallback);
+    };
+  }, [username, onPreviewsReady]);
+
   function handleUseTemplate(template: TemplateMeta) {
     onSelectTemplate(template.id);
     setModalTemplate(template);
   }
 
   return (
-    <section id="templates" className="bg-bg px-6 py-24 md:py-28">
+    <section id="templates" className="scroll-mt-28 bg-bg px-6 py-24 md:py-28">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -209,5 +253,6 @@ export function TemplateGallery({
     </section>
   );
 }
+
 
 

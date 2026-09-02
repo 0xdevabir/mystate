@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Marquee } from "@/components/Marquee";
@@ -13,21 +13,46 @@ import { DEFAULT_TEMPLATE } from "@/lib/templates";
 import { DEFAULT_THEME, DEFAULT_CUSTOM_COLORS } from "@/lib/themes";
 import type { CustomThemeColors } from "@/types";
 
+function scrollToTemplates() {
+  window.requestAnimationFrame(() => {
+    document.getElementById("templates")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+}
+
 export default function Home() {
   const [username, setUsername] = useState("");
   const [activeUsername, setActiveUsername] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_TEMPLATE);
   const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
   const [customColors, setCustomColors] = useState<CustomThemeColors>(DEFAULT_CUSTOM_COLORS);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [previewsLoading, setPreviewsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const showSkeleton = isValidating || previewsLoading;
+  const showGallery = Boolean(activeUsername) && !showSkeleton;
+
+  const handlePreviewsReady = useCallback(() => {
+    setPreviewsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!showSkeleton) return;
+    const timer = window.setTimeout(scrollToTemplates, 80);
+    return () => window.clearTimeout(timer);
+  }, [showSkeleton]);
 
   const handleSubmit = useCallback(async () => {
     const trimmed = username.trim();
     if (!trimmed) return;
 
-    setIsLoading(true);
+    setIsValidating(true);
+    setPreviewsLoading(true);
     setError(null);
+    setActiveUsername("");
 
     try {
       const res = await fetch(`/api/user/${encodeURIComponent(trimmed)}`);
@@ -36,12 +61,12 @@ export default function Home() {
         throw new Error(data.error ?? "Failed to fetch user");
       }
       setActiveUsername(trimmed);
-      document.getElementById("templates")?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setActiveUsername("");
+      setPreviewsLoading(false);
     } finally {
-      setIsLoading(false);
+      setIsValidating(false);
     }
   }, [username]);
 
@@ -53,7 +78,7 @@ export default function Home() {
           username={username}
           onUsernameChange={setUsername}
           onSubmit={handleSubmit}
-          isLoading={isLoading}
+          isLoading={isValidating}
         />
 
         {error && (
@@ -67,22 +92,25 @@ export default function Home() {
         <Marquee />
         <HowItWorks />
 
-        {isLoading && <TemplateGallerySkeleton />}
+        {showSkeleton && <TemplateGallerySkeleton />}
 
-        {activeUsername && !isLoading && (
-          <TemplateGallery
-            username={activeUsername}
-            draftUsername={username}
-            selectedTemplate={selectedTemplate}
-            selectedTheme={selectedTheme}
-            customColors={customColors}
-            onSelectTemplate={setSelectedTemplate}
-            onSelectTheme={setSelectedTheme}
-            onCustomColorsChange={setCustomColors}
-          />
+        {activeUsername && (
+          <div className={showGallery ? undefined : "sr-only"} aria-hidden={!showGallery}>
+            <TemplateGallery
+              username={activeUsername}
+              draftUsername={username}
+              selectedTemplate={selectedTemplate}
+              selectedTheme={selectedTheme}
+              customColors={customColors}
+              onSelectTemplate={setSelectedTemplate}
+              onSelectTheme={setSelectedTheme}
+              onCustomColorsChange={setCustomColors}
+              onPreviewsReady={handlePreviewsReady}
+            />
+          </div>
         )}
 
-        {activeUsername && !isLoading && (
+        {showGallery && (
           <EmbedCode
             username={activeUsername}
             template={selectedTemplate}
@@ -95,7 +123,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
-
