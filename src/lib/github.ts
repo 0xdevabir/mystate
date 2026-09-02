@@ -1,4 +1,9 @@
-import type { GitHubStats, LanguageStat } from "@/types";
+import type {
+  ContributionDay,
+  GitHubStats,
+  LanguageStat,
+  MonthlyContribution,
+} from "@/types";
 
 const LANGUAGE_COLORS: Record<string, string> = {
   JavaScript: "#f1e05a",
@@ -22,8 +27,6 @@ const LANGUAGE_COLORS: Record<string, string> = {
   Scala: "#c22d40",
   Elixir: "#6e4a7e",
   Jupyter: "#DA5B0B",
-  Markdown: "#083fa1",
-  Dockerfile: "#384d54",
 };
 
 function getHeaders(): HeadersInit {
@@ -47,47 +50,53 @@ async function githubFetch<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-async function githubGraphQL<T>(query: string, variables: Record<string, string>): Promise<T> {
+async function githubGraphQL<T>(
+  query: string,
+  variables: Record<string, string>,
+): Promise<T> {
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
-    headers: {
-      ...getHeaders(),
-      "Content-Type": "application/json",
-    },
+    headers: { ...getHeaders(), "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),
     next: { revalidate: 3600 },
   });
   if (!res.ok) throw new Error(`GITHUB_GRAPHQL_ERROR:${res.status}`);
   const json = (await res.json()) as { data: T; errors?: { message: string }[] };
-  if (json.errors?.length) throw new Error(`GITHUB_GRAPHQL_ERROR:${json.errors[0].message}`);
+  if (json.errors?.length) {
+    throw new Error(`GITHUB_GRAPHQL_ERROR:${json.errors[0].message}`);
+  }
   return json.data;
 }
 
 function formatAccountAge(createdAt: string): string {
   const created = new Date(createdAt);
   const now = new Date();
-  const years = now.getFullYear() - created.getFullYear();
-  const months = now.getMonth() - created.getMonth();
-  const totalMonths = years * 12 + months;
-  if (totalMonths < 12) return `${totalMonths}mo`;
-  const y = Math.floor(totalMonths / 12);
-  const m = totalMonths % 12;
+  const months =
+    (now.getFullYear() - created.getFullYear()) * 12 +
+    (now.getMonth() - created.getMonth());
+  if (months < 12) return `${months}mo`;
+  const y = Math.floor(months / 12);
+  const m = months % 12;
   return m > 0 ? `${y}y ${m}mo` : `${y}y`;
 }
 
-function computeLanguagesFromBytes(
-  langBytes: Record<string, number>,
-): LanguageStat[] {
+function joinedLabel(createdAt: string): string {
+  const years = Math.floor(
+    (Date.now() - new Date(createdAt).getTime()) / (365.25 * 24 * 60 * 60 * 1000),
+  );
+  return years <= 0 ? "Joined this year" : `Joined GitHub ${years} year${years > 1 ? "s" : ""} ago`;
+}
+
+function computeLanguagesFromBytes(langBytes: Record<string, number>): LanguageStat[] {
   const total = Object.values(langBytes).reduce((a, b) => a + b, 0);
   if (total === 0) return [];
-
   return Object.entries(langBytes)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 6)
+    .slice(0, 8)
     .map(([name, bytes]) => ({
       name,
       bytes,
-      percentage: Math.round((bytes / total) * 100),
+      percentage: Math.round((bytes / total) * 1000) / 10,
       color: LANGUAGE_COLORS[name] ?? "#8b949e",
     }));
 }
@@ -105,16 +114,108 @@ function computeLanguagesFromRepos(
   if (total === 0) return [];
   return Object.entries(counts)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 6)
+    .slice(0, 8)
     .map(([name, count]) => ({
       name,
-      percentage: Math.round((count / total) * 100),
+      percentage: Math.round((count / total) * 1000) / 10,
       color: LANGUAGE_COLORS[name] ?? "#8b949e",
     }));
 }
 
+function parseCalendarDays(
+  weeks: { contributionDays: { contributionCount: number; date: string }[] }[],
+): ContributionDay[] {
+  return weeks
+    .flatMap((w) => w.contributionDays)
+    .map((d) => ({ date: d.date, count: d.contributionCount }));
+}
+
+function aggregateMonthly(days: ContributionDay[]): MonthlyContribution[] {
+  const buckets: Record<string, number> = {};
+  for (const day of days) {
+    const key = day.date.slice(0, 7);
+    buckets[key] = (buckets[key] ?? 0) + day.count;
+  }
+  const sorted = Object.entries(buckets).sort(([a], [b]) => a.localeCompare(b));
+  return sorted.slice(-12).map(([month, count]) => ({
+    month: new Date(`${month}-01`).toLocaleString("en", { month: "short" }),
+    count,
+  }));
+}
+
+function formatDateShort(iso: string): string {
+  return new Date(iso).toLocaleDateString("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function computeStreaks(days: ContributionDay[]) {
+  const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date));
+  const map = new Map(days.map((d) => [d.date, d.count]));
+
+  let longest = 0;
+  let longestStart = "";
+  let longestEnd = "";
+  let run = 0;
+  let runStart = "";
+
+  for (const day of sorted) {
+    if (day.count > 0) {
+      if (run === 0) runStart = day.date;
+      run++;
+      if (run > longest) {
+        longest = run;
+        longestStart = runStart;
+        longestEnd = day.date;
+      }
+    } else {
+      run = 0;
+    }
+  }
+
+  let current = 0;
+  let currentStart = "";
+  const cursor = new Date();
+  for (let i = 0; i < 400; i++) {
+    const key = cursor.toISOString().slice(0, 10);
+    if ((map.get(key) ?? 0) > 0) {
+      if (current === 0) currentStart = key;
+      current++;
+      cursor.setDate(cursor.getDate() - 1);
+    } else break;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  return {
+    currentStreak: current,
+    longestStreak: longest,
+    currentStreakRange:
+      current > 0
+        ? `${formatDateShort(currentStart)} – ${formatDateShort(today)}`
+        : "—",
+    longestStreakRange:
+      longest > 0
+        ? `${formatDateShort(longestStart)} – ${formatDateShort(longestEnd)}`
+        : "—",
+  };
+}
+
+function calculateRank(contributions: number, stars: number): string {
+  const score = contributions + stars * 3;
+  if (score >= 6000) return "S+";
+  if (score >= 4500) return "S";
+  if (score >= 3000) return "A+";
+  if (score >= 2000) return "A";
+  if (score >= 1200) return "B+";
+  if (score >= 600) return "B";
+  if (score >= 250) return "C+";
+  return "C";
+}
+
 const GRAPHQL_QUERY = `
-  query($username: String!) {
+  query($username: String!, $from: DateTime!, $to: DateTime!) {
     user(login: $username) {
       login
       name
@@ -129,19 +230,28 @@ const GRAPHQL_QUERY = `
       following { totalCount }
       gists { totalCount }
       repositories(privacy: PUBLIC) { totalCount }
-      contributionsCollection {
+      repositoriesContributedTo(includeUserRepositories: false) { totalCount }
+      contributionsCollection(from: $from, to: $to) {
         totalCommitContributions
         totalIssueContributions
         totalPullRequestContributions
         totalPullRequestReviewContributions
         restrictedContributionsCount
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              contributionCount
+              date
+            }
+          }
+        }
       }
       repositories(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, ownerAffiliations: OWNER) {
         nodes {
           stargazerCount
           forkCount
           watchers { totalCount }
-          primaryLanguage { name }
           languages(first: 10) {
             edges { size node { name } }
           }
@@ -165,13 +275,13 @@ interface GraphQLUser {
     followers: { totalCount: number };
     following: { totalCount: number };
     gists: { totalCount: number };
+    repositoriesContributedTo: { totalCount: number };
     repositories: {
       totalCount: number;
       nodes: {
         stargazerCount: number;
         forkCount: number;
         watchers: { totalCount: number };
-        primaryLanguage: { name: string } | null;
         languages: { edges: { size: number; node: { name: string } }[] };
       }[];
     };
@@ -181,6 +291,10 @@ interface GraphQLUser {
       totalPullRequestContributions: number;
       totalPullRequestReviewContributions: number;
       restrictedContributionsCount: number;
+      contributionCalendar: {
+        totalContributions: number;
+        weeks: { contributionDays: { contributionCount: number; date: string }[] }[];
+      };
     };
   } | null;
 }
@@ -208,7 +322,20 @@ interface RESTRepo {
   language: string | null;
 }
 
-function buildStats(
+function emptyAnalytics(createdAt: string) {
+  const streaks = computeStreaks([]);
+  return {
+    contributionsLastYear: 0,
+    contributedTo: 0,
+    totalLifetimeContributions: 0,
+    monthlyContributions: [] as MonthlyContribution[],
+    contributionDays: [] as ContributionDay[],
+    joinedLabel: joinedLabel(createdAt),
+    ...streaks,
+  };
+}
+
+function buildFromAnalytics(
   base: Omit<
     GitHubStats,
     | "totalStars"
@@ -221,12 +348,19 @@ function buildStats(
     | "totalPullRequests"
     | "totalReviews"
     | "totalContributions"
+    | "contributionsLastYear"
+    | "contributedTo"
+    | "totalLifetimeContributions"
+    | "currentStreak"
+    | "longestStreak"
+    | "currentStreakRange"
+    | "longestStreakRange"
+    | "rank"
+    | "monthlyContributions"
+    | "contributionDays"
+    | "joinedLabel"
   >,
-  repos: {
-    stars: number;
-    forks: number;
-    watchers: number;
-  },
+  repos: { stars: number; forks: number; watchers: number },
   contributions: {
     commits: number;
     issues: number;
@@ -235,6 +369,13 @@ function buildStats(
     restricted: number;
   },
   languages: LanguageStat[],
+  analytics: ReturnType<typeof emptyAnalytics> & {
+    contributionsLastYear: number;
+    totalLifetimeContributions: number;
+    monthlyContributions: MonthlyContribution[];
+    contributionDays: ContributionDay[];
+    contributedTo: number;
+  },
 ): GitHubStats {
   const totalContributions =
     contributions.commits +
@@ -245,6 +386,7 @@ function buildStats(
 
   return {
     ...base,
+    ...analytics,
     totalStars: repos.stars,
     totalForks: repos.forks,
     totalWatchers: repos.watchers,
@@ -258,22 +400,31 @@ function buildStats(
     totalReviews: contributions.reviews,
     totalContributions,
     topLanguages: languages,
+    rank: calculateRank(analytics.contributionsLastYear, repos.stars),
   };
 }
 
 async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
-  const data = await githubGraphQL<GraphQLUser>(GRAPHQL_QUERY, { username: clean });
+  const now = new Date().toISOString();
+  const data = await githubGraphQL<GraphQLUser>(GRAPHQL_QUERY, {
+    username: clean,
+    from: "2015-01-01T00:00:00Z",
+    to: now,
+  });
   if (!data.user) throw new Error("USER_NOT_FOUND");
 
   const u = data.user;
-  const nodes = u.repositories.nodes;
+  const c = u.contributionsCollection;
+  const calendar = c.contributionCalendar;
+  const days = parseCalendarDays(calendar.weeks);
+  const streaks = computeStreaks(days);
 
   let totalStars = 0;
   let totalForks = 0;
   let totalWatchers = 0;
   const langBytes: Record<string, number> = {};
 
-  for (const repo of nodes) {
+  for (const repo of u.repositories.nodes) {
     totalStars += repo.stargazerCount;
     totalForks += repo.forkCount;
     totalWatchers += repo.watchers.totalCount;
@@ -282,9 +433,16 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
     }
   }
 
-  const c = u.contributionsCollection;
+  const analytics = {
+    contributionsLastYear: calendar.totalContributions,
+    contributedTo: u.repositoriesContributedTo.totalCount,
+    totalLifetimeContributions: days.reduce((s, d) => s + d.count, 0),
+    monthlyContributions: aggregateMonthly(days),
+    contributionDays: days,
+    joinedLabel: joinedLabel(u.createdAt),
+  };
 
-  return buildStats(
+  return buildFromAnalytics(
     {
       username: u.login,
       name: u.name,
@@ -310,6 +468,7 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
       restricted: c.restrictedContributionsCount,
     },
     computeLanguagesFromBytes(langBytes),
+    { ...analytics, ...streaks },
   );
 }
 
@@ -328,7 +487,7 @@ async function fetchViaREST(clean: string): Promise<GitHubStats> {
     totalWatchers += repo.watchers_count;
   }
 
-  return buildStats(
+  return buildFromAnalytics(
     {
       username: user.login,
       name: user.name,
@@ -348,6 +507,7 @@ async function fetchViaREST(clean: string): Promise<GitHubStats> {
     { stars: totalStars, forks: totalForks, watchers: totalWatchers },
     { commits: 0, issues: 0, prs: 0, reviews: 0, restricted: 0 },
     computeLanguagesFromRepos(repos),
+    emptyAnalytics(user.created_at),
   );
 }
 
