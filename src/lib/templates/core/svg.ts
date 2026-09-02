@@ -13,7 +13,7 @@ ${content}
 }
 
 export function svgOpen(width: number, height: number): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
 }
 
 export function svgClose(): string {
@@ -42,7 +42,7 @@ export function avatar(
       <clipPath id="av-${x}-${y}"><circle cx="${x + r}" cy="${y + r}" r="${r}"/></clipPath>
     </defs>
     <circle cx="${x + r}" cy="${y + r}" r="${r + 1}" fill="${palette.border}"/>
-    <image href="${escapeXml(url)}" x="${x}" y="${y}" width="${size}" height="${size}" clip-path="url(#av-${x}-${y})"/>`;
+    <image href="${escapeXml(url)}" xlink:href="${escapeXml(url)}" x="${x}" y="${y}" width="${size}" height="${size}" clip-path="url(#av-${x}-${y})" preserveAspectRatio="xMidYMid slice"/>`;
 }
 
 export function text(
@@ -135,9 +135,9 @@ export function languageBar(
     .join("");
 
   const labels = languages
-    .slice(0, 5)
+    .slice(0, 4)
     .map((lang, i) => {
-      const lx = x + i * 95;
+      const lx = x + i * Math.min(95, width / 4);
       return `
         <circle cx="${lx}" cy="${y + 18}" r="3.5" fill="${lang.color}"/>
         ${text(lx + 8, y + 22, `${lang.name} ${lang.percentage}%`, {

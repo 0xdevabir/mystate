@@ -1,10 +1,11 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { CustomThemeColors, TemplateMeta } from "@/types";
 import { buildPreviewUrl } from "@/lib/utils";
 import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
+import { TemplatePreview } from "./TemplatePreview";
 
 const DEMO_USERNAME = "0xdevabir";
 
@@ -39,10 +40,6 @@ export function TemplateCard({
     true,
     colorTheme === CUSTOM_THEME_ID ? customColors : undefined,
   );
-  const previewKey =
-    colorTheme === CUSTOM_THEME_ID && customColors
-      ? `${previewUser}-${template.id}-${colorTheme}-${customColors.bg}-${customColors.accent}-${customColors.highlight}`
-      : `${previewUser}-${template.id}-${colorTheme}`;
 
   return (
     <motion.article
@@ -74,22 +71,16 @@ export function TemplateCard({
           </div>
 
           <div
-            className="relative mb-5 overflow-x-auto overflow-y-hidden rounded-lg border border-dark/5 transition-colors duration-500"
+            className="relative mb-5 overflow-hidden rounded-lg border border-dark/5 transition-colors duration-500"
             style={{ background: template.previewBg }}
           >
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={previewKey}
-                src={previewUrl}
-                alt={`${template.name} preview`}
-                className="block w-full min-w-[240px]"
-                loading="lazy"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.01 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </AnimatePresence>
+            <TemplatePreview
+              src={previewUrl}
+              alt={`${template.name} preview`}
+              width={template.width}
+              height={template.height}
+              className="block h-auto w-full min-w-0 rounded-lg"
+            />
             {!username && (
               <p className="mt-2 text-center text-[10px] font-bold uppercase tracking-widest text-dark/30">
                 Demo preview

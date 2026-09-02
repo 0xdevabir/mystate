@@ -21,6 +21,12 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
     year: "numeric",
   });
 
+  const cardW = (W - 48) / 2;
+  const statsX = 36;
+  const statsValueX = 24 + cardW - 28;
+  const bottomY = H - 118;
+  const streakW = (W - 56) / 3;
+
   const statLines = [
     { icon: "★", label: "Total Stars Earned", value: stats.totalStars },
     { icon: "↗", label: "Contributions (12mo)", value: stats.contributionsLastYear },
@@ -31,28 +37,29 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
   const statList = statLines
     .map((s, i) => {
-      const y = 168 + i * 28;
+      const y = 252 + i * 26;
       return `
-        ${text(36, y, s.icon, { fill: palette.accent, size: 11 })}
-        ${text(56, y, s.label, { fill: palette.textMuted, size: 10 })}
-        ${text(200, y, formatNumber(s.value), { fill: palette.text, size: 11, weight: 700, anchor: "end" })}`;
+        ${text(statsX, y, s.icon, { fill: palette.accent, size: 11 })}
+        ${text(statsX + 20, y, s.label, { fill: palette.textMuted, size: 10 })}
+        ${text(statsValueX, y, formatNumber(s.value), {
+          fill: palette.text,
+          size: 11,
+          weight: 700,
+          anchor: "end",
+        })}`;
     })
     .join("");
 
   const quickFacts = [
-    `🔥 ${formatNumber(stats.contributionsLastYear)} contributions in the last year`,
-    `📦 ${stats.publicRepos} public repositories`,
-    `📅 ${stats.joinedLabel}`,
-    stats.location ? `📍 ${stats.location}` : "",
+    `${formatNumber(stats.contributionsLastYear)} contributions (12mo)`,
+    `${stats.publicRepos} public repositories`,
+    stats.joinedLabel,
+    stats.location ?? "",
   ].filter(Boolean);
 
   const facts = quickFacts
-    .map((f, i) => text(36, 88 + i * 16, f, { fill: palette.textMuted, size: 9 }))
+    .map((f, i) => text(statsX, 108 + i * 16, f, { fill: palette.textMuted, size: 9 }))
     .join("");
-
-  const cardW = (W - 48) / 2;
-  const bottomY = H - 118;
-  const streakW = (W - 56) / 3;
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 14)}
@@ -60,27 +67,27 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
     ${text(W / 2, 36, name, { fill: palette.accent, size: 20, weight: 800, anchor: "middle" })}
     ${text(W / 2, 56, `@${stats.username}`, { fill: palette.textMuted, size: 11, anchor: "middle" })}
-    ${facts}
 
     ${card(24, 72, cardW, 130, palette)}
-    ${text(36, 92, "Overview", { fill: palette.text, size: 11, weight: 700 })}
+    ${text(statsX, 92, "Overview", { fill: palette.text, size: 11, weight: 700 })}
+    ${facts}
 
     ${card(24 + cardW + 8, 72, cardW - 8, 130, palette)}
-    ${text(36 + cardW + 8, 92, "Monthly Contributions (Last 12 Months)", {
+    ${text(statsX + cardW + 8, 92, "Monthly Contributions", {
       fill: palette.text,
       size: 10,
       weight: 700,
     })}
-    ${areaChart(stats.monthlyContributions, 36 + cardW + 8, 100, cardW - 32, 88, palette, "pro")}
+    ${areaChart(stats.monthlyContributions, statsX + cardW + 8, 104, cardW - 48, 84, palette, "pro")}
 
     ${card(24, 210, cardW, 170, palette)}
-    ${text(36, 230, "GitHub Stats", { fill: palette.text, size: 12, weight: 700 })}
+    ${text(statsX, 230, "GitHub Stats", { fill: palette.text, size: 12, weight: 700 })}
     ${statList}
-    ${rankBadge(24 + cardW - 50, 300, stats.rank, palette)}
+    ${rankBadge(statsValueX - 8, 348, stats.rank, palette, 48)}
 
     ${card(24 + cardW + 8, 210, cardW - 8, 170, palette)}
-    ${text(36 + cardW + 8, 230, "Most Used Languages", { fill: palette.text, size: 12, weight: 700 })}
-    ${languageBarDetailed(stats.topLanguages, 36 + cardW + 8, 248, cardW - 48, palette, 4)}
+    ${text(statsX + cardW + 8, 230, "Most Used Languages", { fill: palette.text, size: 12, weight: 700 })}
+    ${languageBarDetailed(stats.topLanguages, statsX + cardW + 8, 248, cardW - 56, palette, 4)}
 
     ${streakCard(24, bottomY, streakW, 88, "✦", "Total Contributions", formatNumber(stats.totalLifetimeContributions), `${joined} – Present`, palette, palette.accent)}
     ${streakCard(28 + streakW, bottomY, streakW, 88, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, palette.highlight)}

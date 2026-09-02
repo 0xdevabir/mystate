@@ -1,3 +1,4 @@
+import { embedImageAsDataUrl } from "@/lib/embed-image";
 import type {
   ContributionDay,
   GitHubStats,
@@ -216,7 +217,7 @@ function calculateRank(contributions: number, stars: number): string {
 }
 
 const GRAPHQL_QUERY = `
-  query($username: String!, $from: DateTime!, $to: DateTime!) {
+  query UserStats($username: String!, $from: DateTime!, $yearFrom: DateTime!, $to: DateTime!) {
     user(login: $username) {
       login
       name
@@ -230,9 +231,9 @@ const GRAPHQL_QUERY = `
       followers { totalCount }
       following { totalCount }
       gists { totalCount }
-      repositories(privacy: PUBLIC) { totalCount }
+      publicRepositories: repositories(privacy: PUBLIC) { totalCount }
       repositoriesContributedTo(includeUserRepositories: false) { totalCount }
-      contributionsCollection(from: $from, to: $to) {
+      recentContributions: contributionsCollection(from: $yearFrom, to: $to) {
         totalCommitContributions
         totalIssueContributions
         totalPullRequestContributions
@@ -248,7 +249,17 @@ const GRAPHQL_QUERY = `
           }
         }
       }
-      repositories(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, ownerAffiliations: OWNER) {
+      lifetimeContributions: contributionsCollection(from: $from, to: $to) {
+        contributionCalendar {
+          weeks {
+            contributionDays {
+              contributionCount
+              date
+            }
+          }
+        }
+      }
+      ownedRepositories: repositories(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, ownerAffiliations: OWNER) {
         nodes {
           stargazerCount
           forkCount
@@ -276,17 +287,9 @@ interface GraphQLUser {
     followers: { totalCount: number };
     following: { totalCount: number };
     gists: { totalCount: number };
+    publicRepositories: { totalCount: number };
     repositoriesContributedTo: { totalCount: number };
-    repositories: {
-      totalCount: number;
-      nodes: {
-        stargazerCount: number;
-        forkCount: number;
-        watchers: { totalCount: number };
-        languages: { edges: { size: number; node: { name: string } }[] };
-      }[];
-    };
-    contributionsCollection: {
+    recentContributions: {
       totalCommitContributions: number;
       totalIssueContributions: number;
       totalPullRequestContributions: number;
@@ -296,6 +299,19 @@ interface GraphQLUser {
         totalContributions: number;
         weeks: { contributionDays: { contributionCount: number; date: string }[] }[];
       };
+    };
+    lifetimeContributions: {
+      contributionCalendar: {
+        weeks: { contributionDays: { contributionCount: number; date: string }[] }[];
+      };
+    };
+    ownedRepositories: {
+      nodes: {
+        stargazerCount: number;
+        forkCount: number;
+        watchers: { totalCount: number };
+        languages: { edges: { size: number; node: { name: string } }[] };
+      }[];
     };
   } | null;
 }
@@ -406,26 +422,31 @@ function buildFromAnalytics(
 }
 
 async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
-  const now = new Date().toISOString();
+  const to = new Date();
+  const yearFrom = new Date(to);
+  yearFrom.setFullYear(yearFrom.getFullYear() - 1);
+
   const data = await githubGraphQL<GraphQLUser>(GRAPHQL_QUERY, {
     username: clean,
     from: "2015-01-01T00:00:00Z",
-    to: now,
+    yearFrom: yearFrom.toISOString(),
+    to: to.toISOString(),
   });
   if (!data.user) throw new Error("USER_NOT_FOUND");
 
   const u = data.user;
-  const c = u.contributionsCollection;
+  const c = u.recentContributions;
   const calendar = c.contributionCalendar;
-  const days = parseCalendarDays(calendar.weeks);
-  const streaks = computeStreaks(days);
+  const recentDays = parseCalendarDays(calendar.weeks);
+  const lifetimeDays = parseCalendarDays(u.lifetimeContributions.contributionCalendar.weeks);
+  const streaks = computeStreaks(lifetimeDays.length > 0 ? lifetimeDays : recentDays);
 
   let totalStars = 0;
   let totalForks = 0;
   let totalWatchers = 0;
   const langBytes: Record<string, number> = {};
 
-  for (const repo of u.repositories.nodes) {
+  for (const repo of u.ownedRepositories.nodes) {
     totalStars += repo.stargazerCount;
     totalForks += repo.forkCount;
     totalWatchers += repo.watchers.totalCount;
@@ -437,9 +458,9 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
   const analytics = {
     contributionsLastYear: calendar.totalContributions,
     contributedTo: u.repositoriesContributedTo.totalCount,
-    totalLifetimeContributions: days.reduce((s, d) => s + d.count, 0),
-    monthlyContributions: aggregateMonthly(days),
-    contributionDays: days,
+    totalLifetimeContributions: lifetimeDays.reduce((s, d) => s + d.count, 0),
+    monthlyContributions: aggregateMonthly(recentDays),
+    contributionDays: recentDays,
     joinedLabel: joinedLabel(u.createdAt),
   };
 
@@ -455,7 +476,7 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
       twitter: u.twitterUsername,
       createdAt: u.createdAt,
       accountAge: formatAccountAge(u.createdAt),
-      publicRepos: u.repositories.totalCount,
+      publicRepos: u.publicRepositories.totalCount,
       publicGists: u.gists.totalCount,
       followers: u.followers.totalCount,
       following: u.following.totalCount,
@@ -512,6 +533,11 @@ async function fetchViaREST(clean: string): Promise<GitHubStats> {
   );
 }
 
+async function withEmbeddedAvatar(stats: GitHubStats): Promise<GitHubStats> {
+  const avatar = await embedImageAsDataUrl(stats.avatar);
+  return avatar === stats.avatar ? stats : { ...stats, avatar };
+}
+
 export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
   const clean = username.trim().toLowerCase();
   if (!clean || !/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(clean)) {
@@ -520,11 +546,12 @@ export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
 
   if (process.env.GITHUB_TOKEN) {
     try {
-      return await fetchViaGraphQL(clean);
-    } catch {
-      return fetchViaREST(clean);
+      return await withEmbeddedAvatar(await fetchViaGraphQL(clean));
+    } catch (error) {
+      console.error("[github] GraphQL failed, falling back to REST:", error);
+      return withEmbeddedAvatar(await fetchViaREST(clean));
     }
   }
 
-  return fetchViaREST(clean);
+  return withEmbeddedAvatar(await fetchViaREST(clean));
 }

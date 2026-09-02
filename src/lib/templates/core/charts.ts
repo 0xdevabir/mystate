@@ -49,7 +49,7 @@ export function areaChart(
   uid: string,
 ): string {
   if (data.length === 0) {
-    return text(x + w / 2, y + h / 2, "Add GITHUB_TOKEN for contribution graph", {
+    return text(x + w / 2, y + h / 2, "No contribution data available", {
       fill: palette.textMuted,
       size: 10,
       anchor: "middle",
@@ -227,7 +227,7 @@ export function heatmapStrip(
 ): string {
   const recent = days.slice(-52);
   if (recent.length === 0) {
-    return text(x, y + h / 2, "Contribution heatmap requires GITHUB_TOKEN", {
+    return text(x, y + h / 2, "No contribution activity data", {
       fill: palette.textMuted,
       size: 9,
     });

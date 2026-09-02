@@ -6,6 +6,7 @@ import { Check, Copy } from "lucide-react";
 import { buildEmbedUrl, buildMarkdown, buildPreviewUrl } from "@/lib/utils";
 import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
 import type { CustomThemeColors } from "@/types";
+import { TemplatePreview } from "./TemplatePreview";
 
 const DEMO_USERNAME = "0xdevabir";
 
@@ -47,10 +48,7 @@ export function EmbedCodePanel({
   const markdown = buildMarkdown(embedUser, template, theme, colors);
   const html = `<img src="${buildEmbedUrl(embedUser, template, theme, colors)}" alt="My GitHub Stats" />`;
   const code = format === "markdown" ? markdown : html;
-  const previewKey =
-    theme === CUSTOM_THEME_ID && customColors
-      ? `${previewUser}-${template}-${theme}-${customColors.bg}-${customColors.accent}-${customColors.highlight}`
-      : `${previewUser}-${template}-${theme}`;
+  const previewSrc = buildPreviewUrl(previewUser, template, theme, true, colors);
 
   const isDark = variant === "dark";
   const isModal = layout === "modal";
@@ -89,20 +87,14 @@ export function EmbedCodePanel({
         }`}
         style={{ backgroundColor: isDark ? undefined : previewBg }}
       >
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={previewKey}
-            src={buildPreviewUrl(previewUser, template, theme, true, colors)}
-            alt="Stats preview"
-            width={templateWidth}
-            height={templateHeight}
-            className="block h-auto w-full max-w-full rounded-lg"
-            initial={{ opacity: 0, scale: 0.99 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.01 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </AnimatePresence>
+        <TemplatePreview
+          src={previewSrc}
+          alt="Stats preview"
+          width={templateWidth}
+          height={templateHeight}
+          className="block h-auto w-full max-w-full rounded-lg"
+          priority={isModal}
+        />
       </div>
     </div>
   ) : null;
@@ -225,3 +217,4 @@ export function EmbedCodePanel({
     </div>
   );
 }
+
