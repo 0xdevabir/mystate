@@ -61,4 +61,5 @@ export const compactStripMeta = {
   width: W,
   height: H,
   previewBg: "#2e3440",
+  category: "classic" as const,
 };

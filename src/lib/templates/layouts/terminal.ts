@@ -70,4 +70,5 @@ export const terminalMeta = {
   width: W,
   height: H,
   previewBg: "#0a0a0a",
+  category: "classic" as const,
 };

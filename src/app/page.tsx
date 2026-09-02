@@ -8,7 +8,7 @@ import { TemplateGallery } from "@/components/TemplateGallery";
 import { EmbedCode } from "@/components/EmbedCode";
 import { Footer } from "@/components/Footer";
 import { HowItWorks } from "@/components/HowItWorks";
-import { TEMPLATE_LIST, DEFAULT_TEMPLATE } from "@/lib/templates";
+import { DEFAULT_TEMPLATE } from "@/lib/templates";
 import { DEFAULT_THEME } from "@/lib/themes";
 
 export default function Home() {
@@ -85,3 +85,4 @@ export default function Home() {
     </div>
   );
 }
+

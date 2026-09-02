@@ -73,4 +73,5 @@ export const dashboardMeta = {
   width: W,
   height: H,
   previewBg: "#161b22",
+  category: "classic" as const,
 };

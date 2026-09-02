@@ -75,5 +75,6 @@ export const radialHubMeta = {
   width: W,
   height: H,
   previewBg: "#13091f",
+  category: "classic" as const,
 };
 

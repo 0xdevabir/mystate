@@ -60,4 +60,5 @@ export const statsGridMeta = {
   width: W,
   height: H,
   previewBg: "#1f2328",
+  category: "classic" as const,
 };

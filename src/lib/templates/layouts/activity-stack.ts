@@ -91,4 +91,5 @@ export const activityStackMeta = {
   width: W,
   height: 500,
   previewBg: "#0c1929",
+  category: "classic" as const,
 };

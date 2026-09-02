@@ -65,4 +65,5 @@ export const bannerMeta = {
   width: W,
   height: H,
   previewBg: "#0d1117",
+  category: "classic" as const,
 };
