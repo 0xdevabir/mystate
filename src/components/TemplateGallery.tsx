@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import type { CustomThemeColors, TemplateMeta } from "@/types";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 import { TemplateCard } from "./TemplateCard";
 import { ThemePicker } from "./ThemePicker";
+import { TemplateUseModal } from "./TemplateUseModal";
 import {
   PREMIUM_TEMPLATES,
   CLASSIC_TEMPLATES,
@@ -14,6 +16,7 @@ import {
 
 interface TemplateGalleryProps {
   username: string;
+  draftUsername?: string;
   selectedTemplate: string;
   selectedTheme: string;
   customColors: CustomThemeColors;
@@ -31,6 +34,7 @@ function TemplateSection({
   selectedTheme,
   customColors,
   onSelectTemplate,
+  onUseTemplate,
   startIndex,
   compact = false,
   columns = "lg:grid-cols-2",
@@ -43,6 +47,7 @@ function TemplateSection({
   selectedTheme: string;
   customColors: CustomThemeColors;
   onSelectTemplate: (id: string) => void;
+  onUseTemplate: (template: TemplateMeta) => void;
   startIndex: number;
   compact?: boolean;
   columns?: string;
@@ -65,6 +70,7 @@ function TemplateSection({
             customColors={customColors}
             selected={selectedTemplate === template.id}
             onSelect={onSelectTemplate}
+            onUse={onUseTemplate}
             index={startIndex + index}
             compact={compact}
           />
@@ -76,6 +82,7 @@ function TemplateSection({
 
 export function TemplateGallery({
   username,
+  draftUsername,
   selectedTemplate,
   selectedTheme,
   customColors,
@@ -83,8 +90,14 @@ export function TemplateGallery({
   onSelectTheme,
   onCustomColorsChange,
 }: TemplateGalleryProps) {
+  const [modalTemplate, setModalTemplate] = useState<TemplateMeta | null>(null);
   const cardStart = PREMIUM_TEMPLATES.length + CLASSIC_TEMPLATES.length;
   const pairStart = cardStart + CARD_TEMPLATES.length;
+
+  function handleUseTemplate(template: TemplateMeta) {
+    onSelectTemplate(template.id);
+    setModalTemplate(template);
+  }
 
   return (
     <section id="templates" className="bg-bg px-6 py-24 md:py-28">
@@ -136,6 +149,7 @@ export function TemplateGallery({
           selectedTheme={selectedTheme}
           customColors={customColors}
           onSelectTemplate={onSelectTemplate}
+          onUseTemplate={handleUseTemplate}
           startIndex={0}
         />
 
@@ -148,6 +162,7 @@ export function TemplateGallery({
           selectedTheme={selectedTheme}
           customColors={customColors}
           onSelectTemplate={onSelectTemplate}
+          onUseTemplate={handleUseTemplate}
           startIndex={PREMIUM_TEMPLATES.length}
         />
 
@@ -160,6 +175,7 @@ export function TemplateGallery({
           selectedTheme={selectedTheme}
           customColors={customColors}
           onSelectTemplate={onSelectTemplate}
+          onUseTemplate={handleUseTemplate}
           startIndex={cardStart}
           compact
           columns="lg:grid-cols-3"
@@ -174,10 +190,20 @@ export function TemplateGallery({
           selectedTheme={selectedTheme}
           customColors={customColors}
           onSelectTemplate={onSelectTemplate}
+          onUseTemplate={handleUseTemplate}
           startIndex={pairStart}
           columns="lg:grid-cols-2"
         />
       </div>
+
+      <TemplateUseModal
+        template={modalTemplate}
+        username={username}
+        draftUsername={draftUsername}
+        theme={selectedTheme}
+        customColors={customColors}
+        onClose={() => setModalTemplate(null)}
+      />
     </section>
   );
 }

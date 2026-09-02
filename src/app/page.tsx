@@ -68,6 +68,7 @@ export default function Home() {
 
         <TemplateGallery
           username={activeUsername}
+          draftUsername={username}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
           customColors={customColors}
@@ -89,5 +90,6 @@ export default function Home() {
     </div>
   );
 }
+
 
 
