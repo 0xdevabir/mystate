@@ -13,38 +13,41 @@ export async function GET(request: NextRequest) {
   const theme = searchParams.get("theme") ?? searchParams.get("color") ?? DEFAULT_THEME;
 
   if (!username) {
-    return new NextResponse("Missing username parameter", { status: 400 });
+    return svgResponse(errorSvg("Missing username parameter"), 400);
   }
 
   try {
     const stats = await fetchGitHubStats(username);
     const svg = renderTemplate(template, theme, stats);
-
-    return new NextResponse(svg, {
-      status: 200,
-      headers: {
-        "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
-      },
-    });
+    return svgResponse(svg, 200);
   } catch (error) {
     const message = error instanceof Error ? error.message : "UNKNOWN";
 
-    if (message === "USER_NOT_FOUND") return errorSvg("User not found", 404);
-    if (message === "INVALID_USERNAME") return errorSvg("Invalid username", 400);
+    if (message === "USER_NOT_FOUND") {
+      return svgResponse(errorSvg("User not found"), 200);
+    }
+    if (message === "INVALID_USERNAME") {
+      return svgResponse(errorSvg("Invalid username"), 200);
+    }
 
-    return errorSvg("Failed to fetch stats", 500);
+    console.error("[stats]", message);
+    return svgResponse(errorSvg("Failed to fetch stats — check GITHUB_TOKEN"), 200);
   }
 }
 
-function errorSvg(message: string, status: number) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="495" height="80" viewBox="0 0 495 80">
+function svgResponse(svg: string, _status: number) {
+  return new NextResponse(svg, {
+    status: 200,
+    headers: {
+      "Content-Type": "image/svg+xml; charset=utf-8",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
+}
+
+function errorSvg(message: string) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="495" height="80" viewBox="0 0 495 80">
     <rect width="495" height="80" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
     <text x="247" y="45" fill="#ef4444" font-size="14" font-family="system-ui,sans-serif" text-anchor="middle">${message}</text>
   </svg>`;
-
-  return new NextResponse(svg, {
-    status,
-    headers: { "Content-Type": "image/svg+xml" },
-  });
 }

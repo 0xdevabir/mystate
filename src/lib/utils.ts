@@ -19,17 +19,26 @@ export function getBaseUrl(): string {
   return "http://localhost:3000";
 }
 
+function statsParams(username: string, template: string, theme: string): string {
+  return new URLSearchParams({ username, template, theme }).toString();
+}
+
+/** Relative URL for in-app previews (works on localhost + production). */
+export function buildPreviewUrl(
+  username: string,
+  template: string,
+  theme: string,
+): string {
+  return `/api/stats?${statsParams(username, template, theme)}`;
+}
+
+/** Absolute URL for README embed code. */
 export function buildEmbedUrl(
   username: string,
   template: string,
   theme: string,
 ): string {
-  const params = new URLSearchParams({
-    username,
-    template,
-    theme,
-  });
-  return `${getBaseUrl()}/api/stats?${params.toString()}`;
+  return `${getBaseUrl()}/api/stats?${statsParams(username, template, theme)}`;
 }
 
 export function buildMarkdown(
@@ -39,3 +48,4 @@ export function buildMarkdown(
 ): string {
   return `![MyState](${buildEmbedUrl(username, template, theme)})`;
 }
+

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Copy } from "lucide-react";
-import { buildEmbedUrl, buildMarkdown } from "@/lib/utils";
+import { buildEmbedUrl, buildMarkdown, buildPreviewUrl } from "@/lib/utils";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 
 interface EmbedCodeProps {
@@ -118,7 +118,7 @@ export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
           <div className="mt-6 overflow-x-auto rounded-xl bg-bg/5 p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={buildEmbedUrl(username, template, theme)}
+              src={buildPreviewUrl(username, template, theme)}
               alt="Stats preview"
               className="mx-auto max-w-none rounded-lg"
             />
@@ -128,3 +128,4 @@ export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
     </motion.section>
   );
 }
+

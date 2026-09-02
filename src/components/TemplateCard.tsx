@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import type { TemplateMeta } from "@/types";
-import { buildEmbedUrl } from "@/lib/utils";
+import { buildPreviewUrl } from "@/lib/utils";
+
+const DEMO_USERNAME = "0xdevabir";
 
 interface TemplateCardProps {
   template: TemplateMeta;
@@ -21,9 +23,8 @@ export function TemplateCard({
   onSelect,
   index,
 }: TemplateCardProps) {
-  const previewUrl = username
-    ? buildEmbedUrl(username, template.id, colorTheme)
-    : null;
+  const previewUser = username || DEMO_USERNAME;
+  const previewUrl = buildPreviewUrl(previewUser, template.id, colorTheme);
 
   return (
     <motion.button
@@ -55,33 +56,18 @@ export function TemplateCard({
           className="mb-5 overflow-x-auto overflow-y-hidden rounded-lg border border-dark/5"
           style={{ background: template.previewBg }}
         >
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt={`${template.name} preview`}
-              className="w-full min-w-[280px]"
-              loading="lazy"
-            />
-          ) : (
-            <div
-              className="flex items-center justify-center"
-              style={{ height: Math.min(template.height * 0.4, 120) }}
-            >
-              <div className="flex gap-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="rounded bg-white/10"
-                    style={{
-                      width: 40 + i * 8,
-                      height: 24,
-                      opacity: 0.2 + i * 0.15,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            key={`${previewUser}-${template.id}-${colorTheme}`}
+            src={previewUrl}
+            alt={`${template.name} preview`}
+            className="block w-full min-w-[280px]"
+            loading="lazy"
+          />
+          {!username && (
+            <p className="mt-2 text-center text-[10px] font-bold uppercase tracking-widest text-dark/30">
+              Demo preview
+            </p>
           )}
         </div>
 
@@ -101,3 +87,4 @@ export function TemplateCard({
     </motion.button>
   );
 }
+
