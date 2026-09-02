@@ -15,16 +15,16 @@ export function heatmapPro(stats: GitHubStats, palette: ThemePalette): string {
 
     ${text(24, 32, name, { fill: palette.text, size: 15, weight: 800 })}
     ${text(24, 50, `@${stats.username}`, { fill: palette.textMuted, size: 10 })}
-    ${text(200, 40, `${formatNumber(stats.contributionsLastYear)} contributions last year`, {
+    ${text(280, 40, `${formatNumber(stats.contributionsLastYear)} contributions last year`, {
       fill: palette.textMuted,
       size: 10,
     })}
-    ${text(200, 56, `${stats.currentStreak} day streak · ${stats.longestStreak} longest`, {
+    ${text(280, 56, `${stats.currentStreak} day streak · ${stats.longestStreak} longest`, {
       fill: palette.textMuted,
       size: 9,
     })}
 
-    ${rankBadge(W - 60, 44, stats.rank, palette, 48)}
+    ${rankBadge(W - 52, 50, stats.rank, palette, 44)}
 
     ${heatmapStrip(stats.contributionDays, 24, 80, W - 48, 100, palette)}
 
@@ -47,3 +47,4 @@ export const heatmapProMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
+

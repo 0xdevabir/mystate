@@ -24,7 +24,9 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
   const cardW = (W - 48) / 2;
   const statsX = 36;
   const statsValueX = 24 + cardW - 28;
-  const bottomY = H - 118;
+  const midCardH = 182;
+  const bottomY = H - 126;
+  const streakH = 96;
   const streakW = (W - 56) / 3;
 
   const statLines = [
@@ -37,7 +39,7 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
   const statList = statLines
     .map((s, i) => {
-      const y = 252 + i * 26;
+      const y = 274 + i * 22;
       return `
         ${text(statsX, y, s.icon, { fill: palette.accent, size: 11 })}
         ${text(statsX + 20, y, s.label, { fill: palette.textMuted, size: 10 })}
@@ -78,20 +80,20 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
       size: 10,
       weight: 700,
     })}
-    ${areaChart(stats.monthlyContributions, statsX + cardW + 8, 104, cardW - 48, 84, palette, "pro")}
+    ${areaChart(stats.monthlyContributions, statsX + cardW + 8, 104, cardW - 48, 72, palette, "pro")}
 
-    ${card(24, 210, cardW, 170, palette)}
+    ${card(24, 210, cardW, midCardH, palette)}
     ${text(statsX, 230, "GitHub Stats", { fill: palette.text, size: 12, weight: 700 })}
+    ${rankBadge(24 + cardW - 36, 248, stats.rank, palette, 40)}
     ${statList}
-    ${rankBadge(statsValueX - 8, 348, stats.rank, palette, 48)}
 
-    ${card(24 + cardW + 8, 210, cardW - 8, 170, palette)}
+    ${card(24 + cardW + 8, 210, cardW - 8, midCardH, palette)}
     ${text(statsX + cardW + 8, 230, "Most Used Languages", { fill: palette.text, size: 12, weight: 700 })}
     ${languageBarDetailed(stats.topLanguages, statsX + cardW + 8, 248, cardW - 56, palette, 4)}
 
-    ${streakCard(24, bottomY, streakW, 88, "✦", "Total Contributions", formatNumber(stats.totalLifetimeContributions), `${joined} – Present`, palette, palette.accent)}
-    ${streakCard(28 + streakW, bottomY, streakW, 88, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, palette.highlight)}
-    ${streakCard(32 + streakW * 2, bottomY, streakW, 88, "↻", "Longest Streak", stats.longestStreak, stats.longestStreakRange, palette, palette.highlight)}
+    ${streakCard(24, bottomY, streakW, streakH, "✦", "Total Contributions", stats.totalLifetimeContributions, `${joined} – Present`, palette, palette.accent)}
+    ${streakCard(28 + streakW, bottomY, streakW, streakH, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, palette.highlight)}
+    ${streakCard(32 + streakW * 2, bottomY, streakW, streakH, "↻", "Longest Streak", stats.longestStreak, stats.longestStreakRange, palette, palette.highlight)}
 
     ${text(24, H - 10, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
   ${svgClose()}`;

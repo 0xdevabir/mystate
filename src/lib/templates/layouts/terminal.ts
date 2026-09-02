@@ -3,7 +3,7 @@ import { escapeXml } from "@/lib/utils";
 import { svgOpen, svgClose, bgRect, text, footer, displayName } from "../core/svg";
 
 const W = 540;
-const H = 320;
+const H = 400;
 
 export function terminal(stats: GitHubStats, palette: ThemePalette): string {
   const name = displayName(stats);
@@ -33,13 +33,13 @@ export function terminal(stats: GitHubStats, palette: ThemePalette): string {
     `│  following:   ${stats.following}`,
     `│  gists:       ${stats.publicGists}`,
     `├─ Languages ───────────────────────────────────`,
-    `│  ${stats.topLanguages.map((l) => `${l.name}(${l.percentage}%)`).join("  ") || "—"}`,
+    `│  ${stats.topLanguages.slice(0, 4).map((l) => `${l.name}(${l.percentage}%)`).join("  ") || "—"}`,
     `└──────────────────────────────────────────────`,
   ];
 
   const body = lines
     .map((line, i) =>
-      text(16, 48 + i * 14, line, {
+      text(16, 48 + i * 12, line, {
         fill: line.startsWith("│") ? palette.highlight : palette.accent,
         size: 10,
         family: "ui-monospace,SFMono-Regular,Menlo,monospace",

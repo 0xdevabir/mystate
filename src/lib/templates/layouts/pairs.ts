@@ -48,7 +48,7 @@ export function pairStreakLang(stats: GitHubStats, palette: ThemePalette): strin
 
     ${card(rightX, 60, rightW, 108, palette)}
     ${text(rightX + 16, 80, "Languages", { fill: palette.text, size: 11, weight: 700 })}
-    ${languageListRows(stats.topLanguages, rightX + 16, 92, rightW - 32, palette, 20, 4)}
+    ${languageListRows(stats.topLanguages, rightX + 16, 88, rightW - 32, palette, 18, 4)}
   `,
   );
 }
@@ -102,12 +102,12 @@ export function pairGraphStats(stats: GitHubStats, palette: ThemePalette): strin
     ${text(24, 48, `@${stats.username}`, { fill: palette.textMuted, size: 9 })}
 
     ${card(24, 60, leftW, 132, palette)}
-    ${areaChart(stats.monthlyContributions, 36, 72, leftW - 24, 108, palette, "pair-gs")}
+    ${areaChart(stats.monthlyContributions, 36, 72, leftW - 24, 96, palette, "pair-gs")}
 
     ${card(rightX, 60, rightW, 132, palette)}
     ${text(rightX + 16, 80, "GitHub Stats", { fill: palette.text, size: 11, weight: 700 })}
     ${statsSvg}
-    ${rankBadge(rightX + rightW - 44, 148, stats.rank, palette, 36)}
+    ${rankBadge(rightX + rightW - 40, 130, stats.rank, palette, 32)}
   `,
   );
 }
@@ -138,9 +138,9 @@ export function pairRankStreak(stats: GitHubStats, palette: ThemePalette): strin
     ${text(24, 32, name, { fill: palette.text, size: 14, weight: 800 })}
     ${text(24, 48, `@${stats.username}`, { fill: palette.textMuted, size: 9 })}
 
-    ${card(24, 60, 200, 100, palette)}
-    ${rankBadge(124, 108, stats.rank, palette, 52)}
-    ${text(124, 148, `${formatNumber(stats.totalStars)} stars`, {
+    ${card(24, 60, 200, 112, palette)}
+    ${rankBadge(124, 98, stats.rank, palette, 44)}
+    ${text(124, 158, `${formatNumber(stats.totalStars)} stars`, {
       fill: palette.textMuted,
       size: 9,
       anchor: "middle",
@@ -203,8 +203,8 @@ export function pairProfileStats(stats: GitHubStats, palette: ThemePalette): str
     ${avatar(stats.avatar, 24, 52, 64, palette)}
     ${text(100, 76, name, { fill: palette.text, size: 14, weight: 800 })}
     ${text(100, 94, `@${stats.username}`, { fill: palette.textMuted, size: 10 })}
-    ${text(100, 112, stats.bio ?? "", { fill: palette.textMuted, size: 9 })}
-    ${rankBadge(200, 100, stats.rank, palette, 36)}
+    ${text(100, 112, (stats.bio ?? "").slice(0, 48), { fill: palette.textMuted, size: 9 })}
+    ${rankBadge(PS_W - 48, 58, stats.rank, palette, 32)}
     ${tiles}
   `,
   );
@@ -239,7 +239,7 @@ export function pairHeatmapRank(stats: GitHubStats, palette: ThemePalette): stri
     ${card(24, 60, HR_W - 120, 100, palette)}
     ${heatmapStrip(stats.contributionDays, 36, 72, HR_W - 148, 76, palette)}
 
-    ${rankBadge(HR_W - 56, 108, stats.rank, palette, 48)}
+    ${rankBadge(HR_W - 72, 108, stats.rank, palette, 44)}
   `,
   );
 }

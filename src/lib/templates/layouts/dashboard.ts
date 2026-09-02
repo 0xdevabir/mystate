@@ -47,7 +47,7 @@ export function dashboard(stats: GitHubStats, palette: ThemePalette): string {
     x: number,
   ) => `
     ${sectionTitle(x, 78, title, palette)}
-    ${items.map((item, i) => statCell(x, 92 + i * 36, item.label, item.value, palette, 90)).join("")}`;
+    ${items.map((item, i) => statCell(x, 92 + i * 30, item.label, item.value, palette, 90)).join("")}`;
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette)}
@@ -60,8 +60,8 @@ export function dashboard(stats: GitHubStats, palette: ThemePalette): string {
     ${renderCol("Repositories", repoStats, 210)}
     ${divider(381, 68, 381, H - 50, palette)}
     ${renderCol("Social", socialStats, 396)}
-    <rect x="16" y="${H - 48}" width="${W - 32}" height="36" rx="6" fill="${palette.card}"/>
-    ${languageBar(stats.topLanguages, 24, H - 44, W - 48, palette)}
+    <rect x="16" y="${H - 52}" width="${W - 32}" height="40" rx="6" fill="${palette.card}"/>
+    ${languageBar(stats.topLanguages, 24, H - 48, W - 48, palette)}
     ${footer(20, H - 6, palette)}
   ${svgClose()}`;
 }

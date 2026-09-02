@@ -100,7 +100,7 @@ export function cardContrib(stats: GitHubStats, palette: ThemePalette): string {
       weight: 700,
       anchor: "end",
     })}
-    ${areaChart(stats.monthlyContributions, 20, 58, CONTRIB_W - 40, 88, palette, "card-contrib")}
+    ${areaChart(stats.monthlyContributions, 20, 58, CONTRIB_W - 40, 72, palette, "card-contrib")}
   `,
     "Contributions",
   );
@@ -127,9 +127,9 @@ export function cardRank(stats: GitHubStats, palette: ThemePalette): string {
     RANK_H,
     palette,
     `
-    ${rankBadge(RANK_W / 2, 88, stats.rank, palette, 56)}
+    ${rankBadge(RANK_W / 2, 78, stats.rank, palette, 48)}
     ${text(RANK_W / 2, 118, name, { fill: palette.text, size: 11, weight: 700, anchor: "middle" })}
-    ${text(RANK_W / 2, 132, `${formatNumber(stats.totalStars)} stars · ${stats.publicRepos} repos`, {
+    ${text(RANK_W / 2, 136, `${formatNumber(stats.totalStars)} stars · ${stats.publicRepos} repos`, {
       fill: palette.textMuted,
       size: 8,
       anchor: "middle",
@@ -244,7 +244,7 @@ export function cardProfile(stats: GitHubStats, palette: ThemePalette): string {
       size: 9,
     })}
     ${topLang ? text(88, 118, `${topLang.name} ${topLang.percentage}%`, { fill: palette.accent, size: 9, weight: 600 }) : ""}
-    ${rankBadge(PROFILE_W - 52, 72, stats.rank, palette, 40)}
+    ${rankBadge(PROFILE_W - 44, 58, stats.rank, palette, 36)}
   `,
     "Profile",
   );

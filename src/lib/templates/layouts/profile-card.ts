@@ -23,7 +23,7 @@ export function profileCard(stats: GitHubStats, palette: ThemePalette): string {
     .map((f, i) => {
       const col = i % 4;
       const row = Math.floor(i / 4);
-      return statCell(168 + col * 82, 72 + row * 42, f.label, f.value, palette);
+      return statCell(168 + col * 82, 68 + row * 38, f.label, f.value, palette);
     })
     .join("");
 
@@ -37,8 +37,8 @@ export function profileCard(stats: GitHubStats, palette: ThemePalette): string {
     ${meta ? text(96, 72, meta.slice(0, 40), { fill: palette.textMuted, size: 9, opacity: 0.8 }) : ""}
     <line x1="148" y1="20" x2="148" y2="${H - 20}" stroke="${palette.border}" stroke-width="1"/>
     ${statsGrid}
-  <rect x="20" y="${H - 36}" width="${W - 40}" height="28" rx="6" fill="${palette.card}"/>
-    ${languageBar(stats.topLanguages, 28, H - 32, W - 56, palette)}
+  <rect x="20" y="${H - 40}" width="${W - 40}" height="32" rx="6" fill="${palette.card}"/>
+    ${languageBar(stats.topLanguages, 28, H - 36, W - 56, palette)}
     ${footer(20, H - 6, palette)}
   ${svgClose()}`;
 }

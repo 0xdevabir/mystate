@@ -18,9 +18,11 @@ export function banner(stats: GitHubStats, palette: ThemePalette): string {
   const fields = allStatFields(stats);
   const name = displayName(stats);
 
-  const ribbon = fields
+  const ribbonFields = fields.slice(0, 10);
+  const segW = (W - 120) / ribbonFields.length;
+  const ribbon = ribbonFields
     .map((f, i) => {
-      const x = 100 + i * 40;
+      const x = 100 + i * segW;
       if (x > W - 30) return "";
       return `
         <g transform="translate(${x}, 95)">
@@ -52,9 +54,9 @@ export function banner(stats: GitHubStats, palette: ThemePalette): string {
     ${stats.bio ? text(84, 82, stats.bio.slice(0, 60), { fill: palette.textMuted, size: 9, opacity: 0.85 }) : ""}
     <line x1="16" y1="88" x2="${W - 16}" y2="88" stroke="${palette.border}" stroke-width="1"/>
     ${ribbon}
-    <rect x="16" y="${H - 28}" width="${W - 32}" height="20" rx="4" fill="${palette.card}"/>
-    ${languageBar(stats.topLanguages, 20, H - 26, W - 40, palette)}
-    ${footer(W - 120, H - 4, palette)}
+    <rect x="16" y="${H - 36}" width="${W - 32}" height="32" rx="4" fill="${palette.card}"/>
+    ${languageBar(stats.topLanguages, 20, H - 32, W - 40, palette)}
+    ${footer(W - 120, H - 10, palette)}
   ${svgClose()}`;
 }
 

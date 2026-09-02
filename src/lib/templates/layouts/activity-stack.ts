@@ -92,7 +92,7 @@ export function activityStack(stats: GitHubStats, palette: ThemePalette): string
     })
     .join("");
 
-  const langY = H - 52;
+  const langY = H - 56;
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette)}
@@ -102,8 +102,8 @@ export function activityStack(stats: GitHubStats, palette: ThemePalette): string
     ${stats.bio ? text(80, 70, stats.bio.slice(0, 48), { fill: palette.textMuted, size: 9 }) : ""}
     ${divider(16, 86, W - 16, 86, palette)}
     ${sectionBlocks}
-    <rect x="16" y="${langY}" width="${W - 32}" height="36" rx="5" fill="${palette.card}"/>
-    ${languageBar(stats.topLanguages, 22, langY + 8, W - 44, palette)}
+    <rect x="16" y="${langY}" width="${W - 32}" height="44" rx="5" fill="${palette.card}"/>
+    ${languageBar(stats.topLanguages, 22, langY + 10, W - 44, palette)}
     ${footer(16, H - 8, palette)}
   ${svgClose()}`;
 }

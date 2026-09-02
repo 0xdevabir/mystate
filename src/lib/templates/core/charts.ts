@@ -59,18 +59,19 @@ export function areaChart(
   }
 
   const max = Math.max(...data.map((d) => d.count), 1);
+  const plotH = h - 14;
   const step = data.length > 1 ? w / (data.length - 1) : w;
   const points = data.map((d, i) => ({
     x: x + i * step,
-    y: y + h - (d.count / max) * (h - 8),
+    y: y + plotH - (d.count / max) * (plotH - 8),
   }));
 
   const line = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-  const area = `${line} L${(x + w).toFixed(1)},${y + h} L${x},${y + h} Z`;
+  const area = `${line} L${(x + w).toFixed(1)},${y + plotH} L${x},${y + plotH} Z`;
 
   const gridLines = [0.25, 0.5, 0.75].map(
     (pct) =>
-      `<line x1="${x}" y1="${y + h * pct}" x2="${x + w}" y2="${y + h * pct}" stroke="${palette.border}" stroke-width="0.5" opacity="0.4"/>`,
+      `<line x1="${x}" y1="${y + plotH * pct}" x2="${x + w}" y2="${y + plotH * pct}" stroke="${palette.border}" stroke-width="0.5" opacity="0.4"/>`,
   );
 
   const labels = data
@@ -78,9 +79,9 @@ export function areaChart(
     .map((d, _, arr) => {
       const idx = data.indexOf(d);
       const px = x + idx * step;
-      return text(px, y + h + 14, d.month, {
+      return text(px, y + h - 2, d.month, {
         fill: palette.textMuted,
-        size: 8,
+        size: 7,
         anchor: "middle",
       });
     })
@@ -108,11 +109,12 @@ export function rankBadge(
   size = 56,
 ): string {
   const r = size / 2;
+  const rankSize = Math.max(14, Math.round(size * 0.36));
   return `
+    ${text(x, y - r - 5, "RANK", { fill: palette.textMuted, size: 7, weight: 700, anchor: "middle" })}
     <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${palette.rankRing}" stroke-width="3" opacity="0.3"/>
     <circle cx="${x}" cy="${y}" r="${r - 6}" fill="none" stroke="${palette.rankRing}" stroke-width="2"/>
-    ${text(x, y + 6, rank, { fill: palette.accent, size: 20, weight: 800, anchor: "middle" })}
-    ${text(x, y + r + 14, "RANK", { fill: palette.textMuted, size: 8, weight: 700, anchor: "middle" })}`;
+    ${text(x, y + 5, rank, { fill: palette.accent, size: rankSize, weight: 800, anchor: "middle" })}`;
 }
 
 
@@ -279,10 +281,14 @@ export function streakCard(
   palette: ThemePalette,
   accentColor?: string,
 ): string {
+  const valueStr = typeof value === "number" ? formatNumber(value) : String(value);
+  const subtitleLine = subtitle
+    ? text(x + 14, y + h - 10, subtitle, { fill: palette.textMuted, size: 7, opacity: 0.75 })
+    : "";
   return `
     ${card(x, y, w, h, palette)}
-    ${text(x + 16, y + 28, icon, { fill: accentColor ?? palette.accent, size: 16 })}
-    ${text(x + 16, y + 52, String(value), { fill: palette.text, size: 22, weight: 800 })}
-    ${text(x + 16, y + 70, title, { fill: palette.textMuted, size: 9, weight: 600 })}
-    ${text(x + 16, y + h - 12, subtitle, { fill: palette.textMuted, size: 8, opacity: 0.7 })}`;
+    ${text(x + 14, y + 22, icon, { fill: accentColor ?? palette.accent, size: 13 })}
+    ${text(x + 32, y + 22, title, { fill: palette.textMuted, size: 9, weight: 600 })}
+    ${text(x + 14, y + 54, valueStr, { fill: palette.text, size: 20, weight: 800 })}
+    ${subtitleLine}`;
 }
