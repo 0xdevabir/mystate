@@ -113,6 +113,30 @@ export function rankBadge(
     ${text(x, y + r + 14, "RANK", { fill: palette.textMuted, size: 8, weight: 700, anchor: "middle" })}`;
 }
 
+
+export function languageStackedBar(
+  languages: GitHubStats["topLanguages"],
+  x: number,
+  y: number,
+  w: number,
+  maxItems = 5,
+  barH = 8,
+): string {
+  if (languages.length === 0) return "";
+
+  const items = languages.slice(0, maxItems);
+  const total = items.reduce((s, l) => s + l.percentage, 0) || 100;
+  let offset = 0;
+  return items
+    .map((lang) => {
+      const segW = Math.max((lang.percentage / total) * w, 2);
+      const seg = `<rect x="${x + offset}" y="${y}" width="${segW}" height="${barH}" rx="2" fill="${lang.color}"/>`;
+      offset += segW;
+      return seg;
+    })
+    .join("");
+}
+
 export function languageBarDetailed(
   languages: GitHubStats["topLanguages"],
   x: number,
@@ -126,15 +150,8 @@ export function languageBarDetailed(
   }
 
   const items = languages.slice(0, maxItems);
-  const total = items.reduce((s, l) => s + l.percentage, 0) || 100;
   const barH = 8;
-  let offset = 0;
-  const segments = items.map((lang) => {
-    const segW = Math.max((lang.percentage / total) * w, 2);
-    const seg = `<rect x="${x + offset}" y="${y}" width="${segW}" height="${barH}" rx="2" fill="${lang.color}"/>`;
-    offset += segW;
-    return seg;
-  });
+  const segments = languageStackedBar(languages, x, y, w, maxItems, barH);
 
   const labels = items
     .map((lang, i) => {
@@ -146,7 +163,7 @@ export function languageBarDetailed(
     })
     .join("");
 
-  return `${segments.join("")}${labels}`;
+  return `${segments}${labels}`;
 }
 
 export function languageListRows(

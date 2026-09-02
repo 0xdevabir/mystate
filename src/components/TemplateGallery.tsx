@@ -5,7 +5,12 @@ import type { TemplateMeta } from "@/types";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 import { TemplateCard } from "./TemplateCard";
 import { ThemePicker } from "./ThemePicker";
-import { PREMIUM_TEMPLATES, CLASSIC_TEMPLATES } from "@/lib/templates";
+import {
+  PREMIUM_TEMPLATES,
+  CLASSIC_TEMPLATES,
+  CARD_TEMPLATES,
+  PAIR_TEMPLATES,
+} from "@/lib/templates";
 
 interface TemplateGalleryProps {
   username: string;
@@ -24,6 +29,8 @@ function TemplateSection({
   selectedTheme,
   onSelectTemplate,
   startIndex,
+  compact = false,
+  columns = "lg:grid-cols-2",
 }: {
   title: string;
   label: string;
@@ -33,6 +40,8 @@ function TemplateSection({
   selectedTheme: string;
   onSelectTemplate: (id: string) => void;
   startIndex: number;
+  compact?: boolean;
+  columns?: string;
 }) {
   if (templates.length === 0) return null;
 
@@ -42,7 +51,7 @@ function TemplateSection({
       <h3 className="mb-8 text-[28px] font-black leading-none text-dark sm:text-[36px]">
         {title}
       </h3>
-      <div className="grid grid-cols-1 gap-px bg-dark/10 lg:grid-cols-2">
+      <div className={`grid grid-cols-1 gap-px bg-dark/10 ${columns}`}>
         {templates.map((template, index) => (
           <TemplateCard
             key={template.id}
@@ -52,6 +61,7 @@ function TemplateSection({
             selected={selectedTemplate === template.id}
             onSelect={onSelectTemplate}
             index={startIndex + index}
+            compact={compact}
           />
         ))}
       </div>
@@ -66,6 +76,9 @@ export function TemplateGallery({
   onSelectTemplate,
   onSelectTheme,
 }: TemplateGalleryProps) {
+  const cardStart = PREMIUM_TEMPLATES.length + CLASSIC_TEMPLATES.length;
+  const pairStart = cardStart + CARD_TEMPLATES.length;
+
   return (
     <section id="templates" className="bg-bg px-6 py-24 md:py-28">
       <div className="mx-auto max-w-7xl">
@@ -78,9 +91,11 @@ export function TemplateGallery({
         >
           <SectionLabel>Layouts</SectionLabel>
           <SectionTitle>Pick a layout.</SectionTitle>
-          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-dark/55">
+          <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-dark/55">
             Premium layouts include contribution graphs, streaks, rank badges, and
-            detailed language breakdowns. Color themes change the palette only.
+            detailed language breakdowns. Single cards and pairs let you mix
+            stats into your README. Color themes change the palette only — with
+            smooth transitions.
             {username && (
               <>
                 {" "}
@@ -94,8 +109,9 @@ export function TemplateGallery({
 
           {!username && (
             <p className="mt-4 rounded-full border border-dark/10 bg-light/50 px-4 py-2 text-[13px] text-dark/50">
-              Add <span className="font-bold">GITHUB_TOKEN</span> on the server for
-              contribution graphs, streaks, and full language data.
+              Enter a username above, or browse with demo data. Add{" "}
+              <span className="font-bold">GITHUB_TOKEN</span> on the server for
+              live contribution graphs, streaks, and language data.
             </p>
           )}
         </motion.div>
@@ -120,6 +136,31 @@ export function TemplateGallery({
           selectedTheme={selectedTheme}
           onSelectTemplate={onSelectTemplate}
           startIndex={PREMIUM_TEMPLATES.length}
+        />
+
+        <TemplateSection
+          label="Single Cards"
+          title="Modular stat cards."
+          templates={CARD_TEMPLATES}
+          username={username}
+          selectedTemplate={selectedTemplate}
+          selectedTheme={selectedTheme}
+          onSelectTemplate={onSelectTemplate}
+          startIndex={cardStart}
+          compact
+          columns="lg:grid-cols-3"
+        />
+
+        <TemplateSection
+          label="Pairs"
+          title="Stack two stats side by side."
+          templates={PAIR_TEMPLATES}
+          username={username}
+          selectedTemplate={selectedTemplate}
+          selectedTheme={selectedTheme}
+          onSelectTemplate={onSelectTemplate}
+          startIndex={pairStart}
+          columns="lg:grid-cols-2"
         />
       </div>
     </section>

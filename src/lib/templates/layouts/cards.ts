@@ -7,7 +7,7 @@ import {
   areaChart,
   rankBadge,
   languageListRows,
-  languageBarDetailed,
+  languageStackedBar,
   heatmapStrip,
   streakCard,
 } from "../core/charts";
@@ -67,9 +67,8 @@ export function cardLanguages(stats: GitHubStats, palette: ThemePalette): string
     LANG_H,
     palette,
     `
-    ${card(20, 48, LANG_W - 40, 36, palette)}
-    ${languageBarDetailed(stats.topLanguages, 32, 62, LANG_W - 64, palette, 5)}
-    ${languageListRows(stats.topLanguages, 32, 100, LANG_W - 64, palette, 22, 4)}
+    ${languageStackedBar(stats.topLanguages, 32, 54, LANG_W - 64, 6)}
+    ${languageListRows(stats.topLanguages, 32, 72, LANG_W - 64, palette, 22, 5)}
   `,
     "Languages",
   );

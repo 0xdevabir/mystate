@@ -116,16 +116,23 @@ export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
           </div>
 
           <div className="mt-6 overflow-x-auto rounded-xl bg-bg/5 p-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={buildPreviewUrl(username, template, theme)}
-              alt="Stats preview"
-              className="mx-auto max-w-none rounded-lg"
-            />
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`${username}-${template}-${theme}`}
+                src={buildPreviewUrl(username, template, theme)}
+                alt="Stats preview"
+                className="mx-auto max-w-none rounded-lg"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.01 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </AnimatePresence>
           </div>
         </div>
       </div>
     </motion.section>
   );
 }
+
 
