@@ -2,16 +2,16 @@ import type { GitHubStats, ThemePalette } from "@/types";
 import { formatNumber } from "@/lib/utils";
 import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
 import {
-  subtleFrame,
   card,
-  areaChart,
+  gradientBorder,
+  areaChartPro,
   rankBadge,
-  languageBarDetailed,
-  streakCard,
+  languageBarGrid,
+  streakCardPro,
 } from "../core/charts";
 
-const W = 820;
-const H = 520;
+const W = 860;
+const H = 560;
 
 export function proDashboard(stats: GitHubStats, palette: ThemePalette): string {
   const name = displayName(stats);
@@ -21,81 +21,150 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
     year: "numeric",
   });
 
-  const cardW = (W - 48) / 2;
-  const statsX = 36;
-  const statsValueX = 24 + cardW - 28;
-  const midCardH = 182;
-  const bottomY = H - 126;
-  const streakH = 96;
-  const streakW = (W - 56) / 3;
+  const pad = 28;
+  const gap = 10;
+  const cardW = (W - pad * 2 - gap) / 2;
+  const topY = 72;
+  const topH = 148;
+  const midY = topY + topH + gap;
+  const midH = 198;
+  const bottomY = midY + midH + gap;
+  const streakH = 108;
+  const streakW = (W - pad * 2 - gap * 2) / 3;
+
+  const leftX = pad;
+  const rightX = pad + cardW + gap;
+
+  const overviewItems = [
+    {
+      icon: "🔥",
+      color: "#ff8a65",
+      text: `${formatNumber(stats.contributionsLastYear)} contributions in the last 12 months`,
+    },
+    {
+      icon: "📚",
+      color: palette.accent,
+      text: `${stats.publicRepos} public repositories`,
+    },
+    {
+      icon: "📅",
+      color: palette.textMuted,
+      text: stats.joinedLabel,
+    },
+    ...(stats.location
+      ? [{ icon: "📍", color: palette.highlight, text: stats.location }]
+      : []),
+  ];
+
+  const overviewList = overviewItems
+    .map((item, i) => {
+      const y = topY + 36 + i * 26;
+      return `
+        ${text(leftX + 20, y, item.icon, { fill: item.color, size: 13 })}
+        ${text(leftX + 42, y, item.text, { fill: palette.text, size: 11, weight: 500 })}`;
+    })
+    .join("");
 
   const statLines = [
-    { icon: "★", label: "Total Stars Earned", value: stats.totalStars },
-    { icon: "↗", label: "Contributions (12mo)", value: stats.contributionsLastYear },
-    { icon: "⑂", label: "Pull Requests", value: stats.totalPullRequests },
-    { icon: "◉", label: "Issues", value: stats.totalIssues },
-    { icon: "◎", label: "Contributed To", value: stats.contributedTo },
+    { icon: "★", color: "#f1e05a", label: "Total Stars Earned", value: stats.totalStars },
+    {
+      icon: "↗",
+      color: palette.highlight,
+      label: "Contributions (12mo)",
+      value: stats.contributionsLastYear,
+    },
+    { icon: "⑂", color: "#bc8cff", label: "Pull Requests", value: stats.totalPullRequests },
+    { icon: "◉", color: "#f778ba", label: "Issues", value: stats.totalIssues },
+    { icon: "◎", color: palette.accent, label: "Contributed To", value: stats.contributedTo },
   ];
 
   const statList = statLines
     .map((s, i) => {
-      const y = 274 + i * 22;
+      const y = midY + 58 + i * 28;
       return `
-        ${text(statsX, y, s.icon, { fill: palette.accent, size: 11 })}
-        ${text(statsX + 20, y, s.label, { fill: palette.textMuted, size: 10 })}
-        ${text(statsValueX, y, formatNumber(s.value), {
+        ${text(leftX + 20, y, s.icon, { fill: s.color, size: 12 })}
+        ${text(leftX + 40, y, s.label, { fill: palette.textMuted, size: 11 })}
+        ${text(leftX + cardW - 100, y, formatNumber(s.value), {
           fill: palette.text,
-          size: 11,
+          size: 12,
           weight: 700,
           anchor: "end",
         })}`;
     })
     .join("");
 
-  const quickFacts = [
-    `${formatNumber(stats.contributionsLastYear)} contributions (12mo)`,
-    `${stats.publicRepos} public repositories`,
-    stats.joinedLabel,
-    stats.location ?? "",
-  ].filter(Boolean);
-
-  const facts = quickFacts
-    .map((f, i) => text(statsX, 108 + i * 16, f, { fill: palette.textMuted, size: 9 }))
-    .join("");
-
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 14)}
-    ${subtleFrame(W, H, palette)}
+    ${gradientBorder(W, H, "pro", palette)}
 
-    ${text(W / 2, 36, name, { fill: palette.accent, size: 20, weight: 800, anchor: "middle" })}
-    ${text(W / 2, 56, `@${stats.username}`, { fill: palette.textMuted, size: 11, anchor: "middle" })}
+    ${text(W / 2, 34, name, { fill: palette.accent, size: 24, weight: 800, anchor: "middle" })}
+    ${text(W / 2, 56, `@${stats.username}`, { fill: palette.textMuted, size: 12, anchor: "middle" })}
 
-    ${card(24, 72, cardW, 130, palette)}
-    ${text(statsX, 92, "Overview", { fill: palette.text, size: 11, weight: 700 })}
-    ${facts}
+    ${card(leftX, topY, cardW, topH, palette)}
+    ${overviewList}
 
-    ${card(24 + cardW + 8, 72, cardW - 8, 130, palette)}
-    ${text(statsX + cardW + 8, 92, "Monthly Contributions", {
-      fill: palette.text,
+    ${card(rightX, topY, cardW, topH, palette)}
+    ${text(rightX + 16, topY + 22, "Monthly Contributions (Last 12 Months)", {
+      fill: palette.textMuted,
       size: 10,
+      weight: 600,
+    })}
+    ${areaChartPro(stats.monthlyContributions, rightX + 12, topY + 30, cardW - 24, topH - 42, palette, "pro")}
+
+    ${card(leftX, midY, cardW, midH, palette)}
+    ${text(leftX + 20, midY + 24, "📈", { fill: palette.accent, size: 14 })}
+    ${text(leftX + 40, midY + 24, "GitHub Stats", { fill: palette.text, size: 14, weight: 700 })}
+    ${statList}
+    ${rankBadge(leftX + cardW - 44, midY + 108, stats.rank, palette, 56)}
+
+    ${card(rightX, midY, cardW, midH, palette)}
+    ${text(rightX + 20, midY + 24, "〈〉", { fill: palette.accent, size: 14, weight: 700 })}
+    ${text(rightX + 44, midY + 24, "Most Used Languages", {
+      fill: palette.text,
+      size: 14,
       weight: 700,
     })}
-    ${areaChart(stats.monthlyContributions, statsX + cardW + 8, 104, cardW - 48, 72, palette, "pro")}
+    ${languageBarGrid(stats.topLanguages, rightX + 20, midY + 44, cardW - 40, palette, 8)}
 
-    ${card(24, 210, cardW, midCardH, palette)}
-    ${text(statsX, 230, "GitHub Stats", { fill: palette.text, size: 12, weight: 700 })}
-    ${rankBadge(24 + cardW - 36, 248, stats.rank, palette, 40)}
-    ${statList}
+    ${streakCardPro(
+      pad,
+      bottomY,
+      streakW,
+      streakH,
+      "✦",
+      "Total Contributions",
+      stats.totalLifetimeContributions,
+      `${joined} – Present`,
+      palette,
+      palette.accent,
+    )}
+    ${streakCardPro(
+      pad + streakW + gap,
+      bottomY,
+      streakW,
+      streakH,
+      "🔥",
+      "Current Streak",
+      stats.currentStreak,
+      stats.currentStreakRange,
+      palette,
+      "#ff8a65",
+      true,
+    )}
+    ${streakCardPro(
+      pad + (streakW + gap) * 2,
+      bottomY,
+      streakW,
+      streakH,
+      "↻",
+      "Longest Streak",
+      stats.longestStreak,
+      stats.longestStreakRange,
+      palette,
+      palette.highlight,
+    )}
 
-    ${card(24 + cardW + 8, 210, cardW - 8, midCardH, palette)}
-    ${text(statsX + cardW + 8, 230, "Most Used Languages", { fill: palette.text, size: 12, weight: 700 })}
-    ${languageBarDetailed(stats.topLanguages, statsX + cardW + 8, 248, cardW - 56, palette, 4)}
-
-    ${streakCard(24, bottomY, streakW, streakH, "✦", "Total Contributions", stats.totalLifetimeContributions, `${joined} – Present`, palette, palette.accent)}
-    ${streakCard(28 + streakW, bottomY, streakW, streakH, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, palette.highlight)}
-    ${streakCard(32 + streakW * 2, bottomY, streakW, streakH, "↻", "Longest Streak", stats.longestStreak, stats.longestStreakRange, palette, palette.highlight)}
-
-    ${text(24, H - 10, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
+    ${text(pad, H - 12, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
   ${svgClose()}`;
 }
 

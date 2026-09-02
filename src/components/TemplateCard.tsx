@@ -8,8 +8,6 @@ import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
 import { getEmbedLayout, getEmbedLayoutLabel } from "@/lib/embed-layout";
 import { TemplatePreview } from "./TemplatePreview";
 
-const DEMO_USERNAME = "0xdevabir";
-
 interface TemplateCardProps {
   template: TemplateMeta;
   username: string;
@@ -33,7 +31,7 @@ export function TemplateCard({
   index,
   compact = false,
 }: TemplateCardProps) {
-  const previewUser = username || DEMO_USERNAME;
+  const previewUser = username;
   const previewUrl = buildPreviewUrl(
     previewUser,
     template.id,
@@ -83,17 +81,14 @@ export function TemplateCard({
             style={{ background: template.previewBg }}
           >
             <TemplatePreview
+              key={previewUrl}
               src={previewUrl}
               alt={`${template.name} preview`}
               width={template.width}
               height={template.height}
               className="block h-auto w-full min-w-0 rounded-lg"
+              priority
             />
-            {!username && (
-              <p className="mt-2 text-center text-[10px] font-bold uppercase tracking-widest text-dark/30">
-                Demo preview
-              </p>
-            )}
           </div>
 
           <h3
@@ -132,4 +127,5 @@ export function TemplateCard({
     </motion.article>
   );
 }
+
 

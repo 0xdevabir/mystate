@@ -16,10 +16,18 @@ export function subtleFrame(
 export function gradientBorder(
   w: number,
   h: number,
-  _id: string,
+  id: string,
   palette: ThemePalette,
 ): string {
-  return subtleFrame(w, h, palette);
+  return `
+    <defs>
+      <linearGradient id="grad-border-${id}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${palette.highlight}" stop-opacity="0.95"/>
+        <stop offset="45%" stop-color="${palette.accent}" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#a371f7" stop-opacity="0.9"/>
+      </linearGradient>
+    </defs>
+    <rect x="1.5" y="1.5" width="${w - 3}" height="${h - 3}" rx="13" fill="none" stroke="url(#grad-border-${id})" stroke-width="2"/>`;
 }
 
 export function card(
@@ -168,6 +176,181 @@ export function languageBarDetailed(
     .join("");
 
   return `${segments}${labels}`;
+}
+
+export function languageBarGrid(
+  languages: GitHubStats["topLanguages"],
+  x: number,
+  y: number,
+  w: number,
+  palette: ThemePalette,
+  maxItems = 8,
+): string {
+  if (languages.length === 0) {
+    return text(x, y + 12, "No language data", { fill: palette.textMuted, size: 11 });
+  }
+
+  const items = languages.slice(0, maxItems);
+  const barH = 10;
+  const segments = languageStackedBar(items, x, y, w, maxItems, barH);
+  const colW = w / 2;
+
+  const labels = items
+    .map((lang, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const lx = x + col * colW;
+      const ly = y + 24 + row * 20;
+      return `
+      <circle cx="${lx}" cy="${ly}" r="4.5" fill="${lang.color}"/>
+      ${text(lx + 14, ly + 4, lang.name, { fill: palette.text, size: 10, weight: 600 })}
+      ${text(lx + colW - 6, ly + 4, `${lang.percentage}%`, {
+        fill: palette.textMuted,
+        size: 10,
+        weight: 600,
+        anchor: "end",
+      })}`;
+    })
+    .join("");
+
+  return `${segments}${labels}`;
+}
+
+export function areaChartPro(
+  data: GitHubStats["monthlyContributions"],
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  palette: ThemePalette,
+  uid: string,
+): string {
+  if (data.length === 0) {
+    return areaChart(data, x, y, w, h, palette, uid);
+  }
+
+  const max = Math.max(...data.map((d) => d.count), 1);
+  const mid = Math.round(max / 2);
+  const plotH = h - 18;
+  const plotX = x + 36;
+  const plotW = w - 40;
+  const step = data.length > 1 ? plotW / (data.length - 1) : plotW;
+
+  const points = data.map((d, i) => ({
+    x: plotX + i * step,
+    y: y + plotH - (d.count / max) * (plotH - 10),
+  }));
+
+  const line = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  const area = `${line} L${(plotX + plotW).toFixed(1)},${y + plotH} L${plotX},${y + plotH} Z`;
+
+  const yLabels = [
+    { v: max, y: y + 12 },
+    { v: mid, y: y + plotH / 2 + 4 },
+    { v: 0, y: y + plotH - 2 },
+  ]
+    .map(
+      (t) =>
+        `${text(plotX - 8, t.y, formatNumber(t.v), {
+          fill: palette.textMuted,
+          size: 8,
+          anchor: "end",
+        })}`,
+    )
+    .join("");
+
+  const gridLines = [0.25, 0.5, 0.75]
+    .map(
+      (pct) =>
+        `<line x1="${plotX}" y1="${y + plotH * pct}" x2="${plotX + plotW}" y2="${y + plotH * pct}" stroke="${palette.border}" stroke-width="0.5" opacity="0.35"/>`,
+    )
+    .join("");
+
+  const labels = data
+    .filter((_, i) => i % 2 === 0 || i === data.length - 1)
+    .map((d) => {
+      const idx = data.indexOf(d);
+      const px = plotX + idx * step;
+      return text(px, y + h - 4, d.month, {
+        fill: palette.textMuted,
+        size: 7,
+        anchor: "middle",
+      });
+    })
+    .join("");
+
+  return `
+    <defs>
+      <linearGradient id="area-pro-${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${palette.chartFill}" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="${palette.chartFill}" stop-opacity="0.03"/>
+      </linearGradient>
+      <filter id="glow-${uid}" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    ${yLabels}
+    ${gridLines}
+    <path d="${area}" fill="url(#area-pro-${uid})"/>
+    <path d="${line}" fill="none" stroke="${palette.chartLine}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-${uid})"/>
+    ${points.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${palette.chartLine}"/>`).join("")}
+    ${labels}`;
+}
+
+export function streakCardPro(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  icon: string,
+  title: string,
+  value: number | string,
+  subtitle: string,
+  palette: ThemePalette,
+  accentColor?: string,
+  ring = false,
+): string {
+  const valueStr = typeof value === "number" ? formatNumber(value) : String(value);
+  const accent = accentColor ?? palette.accent;
+  const ringSvg = ring
+    ? `<circle cx="${x + w / 2}" cy="${y + 46}" r="22" fill="none" stroke="${accent}" stroke-width="2.5" opacity="0.35"/>
+       <circle cx="${x + w / 2}" cy="${y + 46}" r="16" fill="none" stroke="${accent}" stroke-width="1.5" opacity="0.5"/>`
+    : "";
+
+  return `
+    ${card(x, y, w, h, palette)}
+    ${ringSvg}
+    ${text(ring ? x + w / 2 : x + 16, ring ? y + 50 : y + 28, icon, {
+      fill: accent,
+      size: ring ? 14 : 16,
+      anchor: ring ? "middle" : "start",
+    })}
+    ${ring
+      ? ""
+      : text(x + 16, y + 50, title, { fill: palette.textMuted, size: 10, weight: 600 })}
+    ${text(ring ? x + w / 2 : x + 16, ring ? y + 72 : y + 78, valueStr, {
+      fill: palette.text,
+      size: ring ? 26 : 28,
+      weight: 800,
+      anchor: ring ? "middle" : "start",
+    })}
+    ${ring
+      ? text(x + w / 2, y + 90, title, {
+          fill: palette.textMuted,
+          size: 9,
+          weight: 600,
+          anchor: "middle",
+        })
+      : ""}
+    ${subtitle
+      ? text(ring ? x + w / 2 : x + 16, y + h - 12, subtitle, {
+          fill: palette.textMuted,
+          size: 7,
+          opacity: 0.8,
+          anchor: ring ? "middle" : "start",
+        })
+      : ""}`;
 }
 
 export function languageListRows(

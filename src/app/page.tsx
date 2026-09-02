@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Marquee } from "@/components/Marquee";
 import { TemplateGallery } from "@/components/TemplateGallery";
+import { TemplateGallerySkeleton } from "@/components/TemplateGallerySkeleton";
 import { EmbedCode } from "@/components/EmbedCode";
 import { Footer } from "@/components/Footer";
 import { HowItWorks } from "@/components/HowItWorks";
@@ -66,18 +67,22 @@ export default function Home() {
         <Marquee />
         <HowItWorks />
 
-        <TemplateGallery
-          username={activeUsername}
-          draftUsername={username}
-          selectedTemplate={selectedTemplate}
-          selectedTheme={selectedTheme}
-          customColors={customColors}
-          onSelectTemplate={setSelectedTemplate}
-          onSelectTheme={setSelectedTheme}
-          onCustomColorsChange={setCustomColors}
-        />
+        {isLoading && <TemplateGallerySkeleton />}
 
-        {activeUsername && (
+        {activeUsername && !isLoading && (
+          <TemplateGallery
+            username={activeUsername}
+            draftUsername={username}
+            selectedTemplate={selectedTemplate}
+            selectedTheme={selectedTheme}
+            customColors={customColors}
+            onSelectTemplate={setSelectedTemplate}
+            onSelectTheme={setSelectedTheme}
+            onCustomColorsChange={setCustomColors}
+          />
+        )}
+
+        {activeUsername && !isLoading && (
           <EmbedCode
             username={activeUsername}
             template={selectedTemplate}
@@ -90,6 +95,7 @@ export default function Home() {
     </div>
   );
 }
+
 
 
 

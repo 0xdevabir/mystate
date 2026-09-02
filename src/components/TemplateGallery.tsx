@@ -124,12 +124,6 @@ export function TemplateGallery({
             customColors={customColors}
             onCustomColorsChange={onCustomColorsChange}
           />
-
-          {!username && (
-            <p className="mt-4 rounded-full border border-dark/10 bg-light/50 px-4 py-2 text-[13px] text-dark/50">
-              Enter a username above, or browse templates with demo data.
-            </p>
-          )}
         </motion.div>
 
         <div className="mb-10">
@@ -166,7 +160,7 @@ export function TemplateGallery({
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeCategory}
             initial={{ opacity: 0, y: 16 }}
@@ -215,4 +209,5 @@ export function TemplateGallery({
     </section>
   );
 }
+
 

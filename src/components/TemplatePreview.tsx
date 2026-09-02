@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TemplatePreviewProps {
   src: string;
@@ -19,59 +19,66 @@ export function TemplatePreview({
   className = "block h-auto w-full max-w-full rounded-lg",
   priority = false,
 }: TemplatePreviewProps) {
-  const [displaySrc, setDisplaySrc] = useState(src);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const pendingSrc = useRef<string | null>(null);
+  const [readySrc, setReadySrc] = useState<string | null>(null);
 
   useEffect(() => {
-    if (src === displaySrc) return;
-
-    pendingSrc.current = src;
-    setIsLoaded(false);
+    let cancelled = false;
+    setReadySrc(null);
 
     const img = new Image();
     img.decoding = "async";
-    img.onload = () => {
-      if (pendingSrc.current !== src) return;
-      setDisplaySrc(src);
-      setIsLoaded(true);
+    if (priority) img.loading = "eager";
+
+    const finish = () => {
+      if (!cancelled) setReadySrc(src);
     };
-    img.onerror = () => {
-      if (pendingSrc.current !== src) return;
-      setDisplaySrc(src);
-      setIsLoaded(true);
-    };
+
+    img.onload = finish;
+    img.onerror = finish;
     img.src = src;
 
     return () => {
-      pendingSrc.current = null;
+      cancelled = true;
+      img.onload = null;
+      img.onerror = null;
     };
-  }, [src, displaySrc]);
+  }, [src, priority]);
 
   const aspectRatio = width && height ? `${width} / ${height}` : undefined;
+  const isLoading = readySrc === null;
 
   return (
     <div className="relative w-full" style={aspectRatio ? { aspectRatio } : undefined}>
       <div
-        className={`absolute inset-0 rounded-lg bg-dark/8 transition-opacity duration-300 ${
-          isLoaded ? "pointer-events-none opacity-0" : "animate-pulse opacity-100"
+        className={`absolute inset-0 overflow-hidden rounded-lg transition-opacity duration-300 ${
+          isLoading ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
-        aria-hidden
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={displaySrc}
-        alt={alt}
-        width={width}
-        height={height}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        fetchPriority={priority ? "high" : "auto"}
-        onLoad={() => setIsLoaded(true)}
-        className={`${className} transition-opacity duration-300 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
+        aria-hidden={!isLoading}
+        aria-label={isLoading ? "Loading preview" : undefined}
+      >
+        <div className="absolute inset-0 bg-dark/6" />
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-dark/10 to-transparent" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-dark/10 border-t-accent/70" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-dark/35">
+            Loading preview
+          </span>
+        </div>
+      </div>
+
+      {readySrc && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={readySrc}
+          alt={alt}
+          width={width}
+          height={height}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
+          className={`${className} opacity-100 transition-opacity duration-300`}
+        />
+      )}
     </div>
   );
 }
