@@ -10,12 +10,11 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
   const name = displayName(stats);
 
   const miniStats = [
-    { icon: "↗", label: "12mo", value: stats.contributionsLastYear },
     { icon: "●", label: "Commits", value: stats.totalCommits },
     { icon: "⑂", label: "PRs", value: stats.totalPullRequests },
-    { icon: "◉", label: "Issues", value: stats.totalIssues },
-    { icon: "✎", label: "Reviews", value: stats.totalReviews },
     { icon: "🔥", label: "Streak", value: stats.currentStreak },
+    { icon: "★", label: "Stars", value: stats.totalStars },
+    { icon: "◎", label: "Repos", value: stats.publicRepos },
   ];
 
   const sidebarW = 168;
@@ -31,7 +30,7 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
     ${subtleFrame(W, H, palette)}
 
     ${text(28, 36, name, { fill: palette.text, size: 18, weight: 800 })}
-    ${text(28, 56, `@${stats.username} · ${formatNumber(stats.totalLifetimeContributions)} lifetime`, {
+    ${text(28, 56, `@${stats.username} · ${stats.publicRepos} public repos`, {
       fill: palette.textMuted,
       size: 10,
     })}
@@ -54,4 +53,5 @@ export const contribGraphMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
+
 

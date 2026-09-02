@@ -19,17 +19,13 @@ export function dashboard(stats: GitHubStats, palette: ThemePalette): string {
   const name = displayName(stats);
 
   const activityStats = [
-    { label: "Commits", value: stats.totalCommits },
     { label: "PRs", value: stats.totalPullRequests },
-    { label: "Issues", value: stats.totalIssues },
-    { label: "Reviews", value: stats.totalReviews },
-    { label: "Contributions", value: stats.totalContributions },
+    { label: "Commits", value: stats.totalCommits },
   ];
 
   const repoStats = [
     { label: "Repos", value: stats.publicRepos },
     { label: "Stars", value: stats.totalStars },
-    { label: "Forks", value: stats.totalForks },
     { label: "Watchers", value: stats.totalWatchers },
     { label: "Avg Stars", value: stats.avgStarsPerRepo },
   ];
@@ -37,7 +33,6 @@ export function dashboard(stats: GitHubStats, palette: ThemePalette): string {
   const socialStats = [
     { label: "Followers", value: stats.followers },
     { label: "Following", value: stats.following },
-    { label: "Gists", value: stats.publicGists },
     { label: "Account", value: stats.accountAge },
   ];
 

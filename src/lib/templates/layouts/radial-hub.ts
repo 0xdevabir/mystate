@@ -21,16 +21,12 @@ export function radialHub(stats: GitHubStats, palette: ThemePalette): string {
 
   const items = [
     { label: "Stars", value: stats.totalStars },
-    { label: "Forks", value: stats.totalForks },
     { label: "Repos", value: stats.publicRepos },
     { label: "Followers", value: stats.followers },
-    { label: "Commits", value: stats.totalCommits },
     { label: "PRs", value: stats.totalPullRequests },
-    { label: "Issues", value: stats.totalIssues },
-    { label: "Reviews", value: stats.totalReviews },
-    { label: "Gists", value: stats.publicGists },
+    { label: "Commits", value: stats.totalCommits },
     { label: "Following", value: stats.following },
-    { label: "Contribs", value: stats.totalContributions },
+    { label: "Watchers", value: stats.totalWatchers },
     { label: "Account", value: stats.accountAge },
   ];
 
@@ -77,4 +73,5 @@ export const radialHubMeta = {
   previewBg: "#13091f",
   category: "classic" as const,
 };
+
 

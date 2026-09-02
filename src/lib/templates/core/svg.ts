@@ -165,16 +165,10 @@ export function allStatFields(stats: GitHubStats): {
 }[] {
   return [
     { label: "Stars", value: stats.totalStars },
-    { label: "Forks", value: stats.totalForks },
     { label: "Repos", value: stats.publicRepos },
     { label: "Followers", value: stats.followers },
     { label: "Following", value: stats.following },
-    { label: "Gists", value: stats.publicGists },
-    { label: "Commits", value: stats.totalCommits },
     { label: "PRs", value: stats.totalPullRequests },
-    { label: "Issues", value: stats.totalIssues },
-    { label: "Reviews", value: stats.totalReviews },
-    { label: "Contributions", value: stats.totalContributions },
     { label: "Watchers", value: stats.totalWatchers },
     { label: "Avg Stars", value: stats.avgStarsPerRepo },
     { label: "Account", value: stats.accountAge },

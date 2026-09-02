@@ -55,19 +55,15 @@ export function activityStack(stats: GitHubStats, palette: ThemePalette): string
       items: [
         { label: "Public Repos", value: stats.publicRepos },
         { label: "Total Stars", value: stats.totalStars },
-        { label: "Total Forks", value: stats.totalForks },
         { label: "Watchers", value: stats.totalWatchers },
         { label: "Avg Stars/Repo", value: stats.avgStarsPerRepo },
       ],
     },
     {
-      title: "Contributions",
+      title: "Activity",
       items: [
-        { label: "Commits", value: stats.totalCommits },
         { label: "Pull Requests", value: stats.totalPullRequests },
-        { label: "Issues", value: stats.totalIssues },
-        { label: "Reviews", value: stats.totalReviews },
-        { label: "Total", value: stats.totalContributions },
+        { label: "Commits", value: stats.totalCommits },
       ],
     },
     {
@@ -75,7 +71,6 @@ export function activityStack(stats: GitHubStats, palette: ThemePalette): string
       items: [
         { label: "Followers", value: stats.followers },
         { label: "Following", value: stats.following },
-        { label: "Gists", value: stats.publicGists },
       ],
     },
   ];

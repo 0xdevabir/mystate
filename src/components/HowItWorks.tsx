@@ -7,7 +7,7 @@ const steps = [
     num: "01",
     title: "Username.",
     description:
-      "Enter your GitHub handle. We pull commits, PRs, issues, reviews, stars, forks, languages, and more.",
+      "Enter your GitHub handle. We pull stars, repos, followers, PRs, languages, streaks, and more.",
   },
   {
     num: "02",
@@ -72,4 +72,5 @@ export function HowItWorks() {
     </section>
   );
 }
+
 

@@ -15,11 +15,6 @@ const H = 560;
 
 export function proDashboard(stats: GitHubStats, palette: ThemePalette): string {
   const name = displayName(stats);
-  const joined = new Date(stats.createdAt).toLocaleDateString("en", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 
   const pad = 28;
   const gap = 10;
@@ -37,9 +32,9 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
   const overviewItems = [
     {
-      icon: "🔥",
-      color: "#ff8a65",
-      text: `${formatNumber(stats.contributionsLastYear)} contributions in the last 12 months`,
+      icon: "★",
+      color: "#f1e05a",
+      text: `${formatNumber(stats.totalStars)} total stars earned`,
     },
     {
       icon: "📚",
@@ -47,12 +42,17 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
       text: `${stats.publicRepos} public repositories`,
     },
     {
+      icon: "👥",
+      color: palette.highlight,
+      text: `${formatNumber(stats.followers)} followers`,
+    },
+    {
       icon: "📅",
       color: palette.textMuted,
       text: stats.joinedLabel,
     },
     ...(stats.location
-      ? [{ icon: "📍", color: palette.highlight, text: stats.location }]
+      ? [{ icon: "📍", color: palette.accent, text: stats.location }]
       : []),
   ];
 
@@ -67,15 +67,9 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
   const statLines = [
     { icon: "★", color: "#f1e05a", label: "Total Stars Earned", value: stats.totalStars },
-    {
-      icon: "↗",
-      color: palette.highlight,
-      label: "Contributions (12mo)",
-      value: stats.contributionsLastYear,
-    },
+    { icon: "◎", color: palette.accent, label: "Public Repositories", value: stats.publicRepos },
     { icon: "⑂", color: "#bc8cff", label: "Pull Requests", value: stats.totalPullRequests },
-    { icon: "◉", color: "#f778ba", label: "Issues", value: stats.totalIssues },
-    { icon: "◎", color: palette.accent, label: "Contributed To", value: stats.contributedTo },
+    { icon: "👥", color: palette.highlight, label: "Followers", value: stats.followers },
   ];
 
   const statList = statLines
@@ -132,9 +126,9 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
       streakW,
       streakH,
       "✦",
-      "Total Contributions",
-      stats.totalLifetimeContributions,
-      `${joined} – Present`,
+      "Total Stars",
+      stats.totalStars,
+      `${stats.publicRepos} repos`,
       palette,
       palette.accent,
     )}
@@ -177,3 +171,4 @@ export const proDashboardMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
+

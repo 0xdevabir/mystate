@@ -157,8 +157,8 @@ export function cardStats(stats: GitHubStats, palette: ThemePalette): string {
   const tiles = [
     { label: "Stars", value: stats.totalStars },
     { label: "PRs", value: stats.totalPullRequests },
-    { label: "Issues", value: stats.totalIssues },
     { label: "Repos", value: stats.publicRepos },
+    { label: "Followers", value: stats.followers },
   ];
   const tileW = (STATS_W - 56) / 4;
   const tilesSvg = tiles

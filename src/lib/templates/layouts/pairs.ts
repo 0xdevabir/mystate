@@ -74,9 +74,9 @@ export function pairGraphStats(stats: GitHubStats, palette: ThemePalette): strin
 
   const statLines = [
     { label: "Stars", value: stats.totalStars },
-    { label: "Contributions", value: stats.contributionsLastYear },
+    { label: "Repos", value: stats.publicRepos },
     { label: "Pull Requests", value: stats.totalPullRequests },
-    { label: "Issues", value: stats.totalIssues },
+    { label: "Followers", value: stats.followers },
   ];
 
   const statsSvg = statLines
@@ -170,7 +170,7 @@ export function pairProfileStats(stats: GitHubStats, palette: ThemePalette): str
   const name = displayName(stats);
   const metrics = [
     { label: "Stars", value: stats.totalStars },
-    { label: "Contribs", value: stats.contributionsLastYear },
+    { label: "Repos", value: stats.publicRepos },
     { label: "PRs", value: stats.totalPullRequests },
     { label: "Followers", value: stats.followers },
   ];

@@ -10,9 +10,9 @@ export function cleanSlate(stats: GitHubStats, palette: ThemePalette): string {
 
   const metrics = [
     { label: "Stars", value: stats.totalStars },
-    { label: "Contribs", value: stats.contributionsLastYear },
-    { label: "PRs", value: stats.totalPullRequests },
     { label: "Repos", value: stats.publicRepos },
+    { label: "PRs", value: stats.totalPullRequests },
+    { label: "Followers", value: stats.followers },
     { label: "Rank", value: stats.rank },
   ];
 
@@ -53,3 +53,4 @@ export const cleanSlateMeta = {
   previewBg: "#ffffff",
   category: "premium" as const,
 };
+

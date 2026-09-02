@@ -17,7 +17,7 @@ export function streakHero(stats: GitHubStats, palette: ThemePalette): string {
     ${text(28, 36, name, { fill: palette.text, size: 18, weight: 800 })}
     ${text(28, 56, `@${stats.username} · Rank ${stats.rank}`, { fill: palette.textMuted, size: 10 })}
 
-    ${streakCard(24, 72, streakW, 96, "✦", "Total Contributions", formatNumber(stats.totalLifetimeContributions), "All time", palette, palette.accent)}
+    ${streakCard(24, 72, streakW, 96, "★", "Total Stars", formatNumber(stats.totalStars), `${stats.publicRepos} repos`, palette, palette.accent)}
     ${streakCard(28 + streakW, 72, streakW, 96, "🔥", "Current Streak", `${stats.currentStreak} days`, stats.currentStreakRange, palette, "#ff8a65")}
     ${streakCard(32 + streakW * 2, 72, streakW, 96, "↻", "Longest Streak", `${stats.longestStreak} days`, stats.longestStreakRange, palette, palette.highlight)}
 
@@ -37,3 +37,4 @@ export const streakHeroMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
+
