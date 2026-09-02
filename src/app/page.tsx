@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
+import { Marquee } from "@/components/Marquee";
 import { TemplateGallery } from "@/components/TemplateGallery";
 import { EmbedCode } from "@/components/EmbedCode";
 import { Footer } from "@/components/Footer";
@@ -40,15 +41,9 @@ export default function Home() {
   }, [username]);
 
   return (
-    <div className="relative min-h-screen">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-1/4 top-0 h-[600px] w-[600px] rounded-full bg-violet-600/10 blur-[120px]" />
-        <div className="absolute -right-1/4 top-1/3 h-[500px] w-[500px] rounded-full bg-fuchsia-600/8 blur-[100px]" />
-        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-cyan-600/6 blur-[100px]" />
-      </div>
-
+    <div className="min-h-screen bg-bg">
       <Header />
-      <main className="relative">
+      <main>
         <Hero
           username={username}
           onUsernameChange={setUsername}
@@ -56,24 +51,23 @@ export default function Home() {
           isLoading={isLoading}
         />
 
-        <HowItWorks />
-
         {error && (
-          <div className="mx-auto -mt-8 mb-4 max-w-md px-6">
-            <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
+          <div className="mx-auto -mt-6 mb-2 max-w-lg px-6">
+            <p className="rounded-full border border-red-500/20 bg-red-500/10 px-5 py-3 text-center text-[14px] text-red-600">
               {error}
             </p>
           </div>
         )}
 
-        <div id="templates">
-          <TemplateGallery
-            templates={TEMPLATE_LIST}
-            username={activeUsername}
-            selectedTheme={selectedTheme}
-            onSelectTheme={setSelectedTheme}
-          />
-        </div>
+        <Marquee />
+        <HowItWorks />
+
+        <TemplateGallery
+          templates={TEMPLATE_LIST}
+          username={activeUsername}
+          selectedTheme={selectedTheme}
+          onSelectTheme={setSelectedTheme}
+        />
 
         {activeUsername && (
           <EmbedCode username={activeUsername} theme={selectedTheme} />
@@ -83,4 +77,3 @@ export default function Home() {
     </div>
   );
 }
-
