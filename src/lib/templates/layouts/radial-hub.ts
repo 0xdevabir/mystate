@@ -42,7 +42,7 @@ export function radialHub(stats: GitHubStats, palette: ThemePalette): string {
       return `
         <line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${palette.border}" stroke-width="1" opacity="0.4"/>
         <circle cx="${x}" cy="${y}" r="28" fill="${palette.card}" stroke="${palette.border}" stroke-width="1"/>
-        ${text(x, y - 4, formatNumber(typeof item.value === "number" ? item.value : 0), {
+        ${text(x, y - 4, typeof item.value === "number" ? formatNumber(item.value) : String(item.value), {
           fill: palette.statValue,
           size: 11,
           weight: 800,
@@ -76,3 +76,4 @@ export const radialHubMeta = {
   height: H,
   previewBg: "#13091f",
 };
+

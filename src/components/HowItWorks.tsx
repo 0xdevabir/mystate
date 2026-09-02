@@ -7,7 +7,7 @@ const steps = [
     num: "01",
     title: "Username.",
     description:
-      "Enter your GitHub handle. We pull your live stats — stars, repos, followers, and top languages.",
+      "Enter your GitHub handle. We pull commits, PRs, issues, reviews, stars, forks, languages, and more.",
   },
   {
     num: "02",
