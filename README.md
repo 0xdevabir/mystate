@@ -4,52 +4,37 @@ Beautiful GitHub stats cards for your profile README.
 
 **Live:** [mystate.devabir.me](https://mystate.devabir.me)
 
-## How it works
+## Premium templates
 
-1. Enter your GitHub username
-2. Pick a **layout** (8 unique arrangements)
-3. Pick a **color theme** (dark, light, dark green, etc.)
-4. Copy one line into your README
+| Template | Focus |
+|----------|-------|
+| `pro-dashboard` | Full dashboard — graph, rank, languages, streaks |
+| `contrib-graph` | Large contribution area chart |
+| `language-expert` | Donut chart + detailed language breakdown |
+| `streak-hero` | Streak cards + heatmap strip |
+| `heatmap-pro` | GitHub-style contribution heatmap |
+| `clean-slate` | Minimal elegant layout |
+
+## Embed
 
 ```markdown
-![MyState](https://mystate.devabir.me/api/stats?username=YOUR_USERNAME&template=profile-card&theme=dark-green)
+![MyState](https://mystate.devabir.me/api/stats?username=YOU&template=pro-dashboard&theme=dark)
 ```
-
-## Layouts
-
-| Template | Description |
-|----------|-------------|
-| `profile-card` | Avatar sidebar + full stats grid |
-| `dashboard` | 3-column activity / repos / social panels |
-| `terminal` | CLI output with all metrics |
-| `stats-grid` | Dense 7-column metric grid |
-| `banner` | Wide horizontal strip |
-| `radial-hub` | Circular orbiting stats |
-| `activity-stack` | Vertical grouped sections |
-| `compact-strip` | Ultra-wide single-row header |
-
-## Color themes
-
-`dark` · `light` · `dark-green` · `ocean` · `sunset` · `purple` · `nord` · `dracula` · `wheat`
 
 ## Stats included
 
-Stars, forks, repos, followers, following, gists, commits, PRs, issues, reviews, total contributions, watchers, avg stars/repo, account age, top languages.
+Stars, forks, repos, followers, contributions (12mo + lifetime), commits, PRs, issues, reviews, streaks, rank grade, contributed-to count, top 8 languages with byte-accurate %, monthly contribution graph.
 
-> **Note:** Commits, PRs, issues, and reviews require `GITHUB_TOKEN` (GraphQL API).
-
-## Environment variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `NEXT_PUBLIC_BASE_URL` | Yes (prod) | Base URL for embed links |
-| `GITHUB_TOKEN` | Recommended | Server-side PAT for full contribution stats |
+## Server env (required for full data)
 
 ```bash
-# .env.local (server only — never expose to client)
 GITHUB_TOKEN=ghp_xxxxxxxxxxxx
 NEXT_PUBLIC_BASE_URL=https://mystate.devabir.me
 ```
+
+`GITHUB_TOKEN` is **server-only**. Without it, graphs, streaks, and contribution data will be empty.
+
+**Token scopes:** `read:user`, `public_repo`
 
 ## Development
 
@@ -57,7 +42,3 @@ NEXT_PUBLIC_BASE_URL=https://mystate.devabir.me
 npm install
 npm run dev
 ```
-
-## Tech stack
-
-Next.js 16 · TypeScript · Tailwind CSS 4 · GitHub REST + GraphQL API

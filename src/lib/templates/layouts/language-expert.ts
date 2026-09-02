@@ -21,8 +21,8 @@ export function languageExpert(stats: GitHubStats, palette: ThemePalette): strin
       return `
         ${text(300, y, lang.name, { fill: palette.text, size: 11, weight: 600 })}
         ${text(680, y, `${lang.percentage}%`, { fill: palette.textMuted, size: 11, anchor: "end" })}
-        <rect x="400" y="${y - 10}" width="${barW}" height="8" rx="3" fill="${lang.color}"/>
-        <rect x="400" y="${y - 10}" width="280" height="8" rx="3" fill="${palette.border}" opacity="0.3"/>`;
+        <rect x="400" y="${y - 10}" width="280" height="8" rx="3" fill="${palette.border}" opacity="0.3"/>
+        <rect x="400" y="${y - 10}" width="${barW}" height="8" rx="3" fill="${lang.color}"/>`;
     })
     .join("");
 
@@ -58,3 +58,4 @@ export const languageExpertMeta = {
   previewBg: "#13091f",
   category: "premium" as const,
 };
+

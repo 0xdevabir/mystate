@@ -65,7 +65,6 @@ export default function Home() {
         <HowItWorks />
 
         <TemplateGallery
-          templates={TEMPLATE_LIST}
           username={activeUsername}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
