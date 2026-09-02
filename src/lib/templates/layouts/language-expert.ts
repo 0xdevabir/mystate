@@ -1,7 +1,7 @@
 import type { GitHubStats, ThemePalette } from "@/types";
 import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
 import {
-  gradientBorder,
+  subtleFrame,
   card,
   donutChart,
   languageBarDetailed,
@@ -28,7 +28,7 @@ export function languageExpert(stats: GitHubStats, palette: ThemePalette): strin
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 12)}
-    ${gradientBorder(W, H, "gb-le", palette)}
+    ${subtleFrame(W, H, palette)}
 
     ${text(28, 38, "Language Breakdown", { fill: palette.text, size: 18, weight: 800 })}
     ${text(28, 58, `${name} · @${stats.username}`, { fill: palette.textMuted, size: 11 })}

@@ -1,7 +1,7 @@
 import type { GitHubStats, ThemePalette } from "@/types";
 import { formatNumber } from "@/lib/utils";
 import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
-import { gradientBorder, card, areaChart, statRow } from "../core/charts";
+import { subtleFrame, card, areaChart, statRow } from "../core/charts";
 
 const W = 780;
 const H = 300;
@@ -24,7 +24,7 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 12)}
-    ${gradientBorder(W, H, "gb-cg", palette)}
+    ${subtleFrame(W, H, palette)}
 
     ${text(28, 36, name, { fill: palette.text, size: 18, weight: 800 })}
     ${text(28, 56, `@${stats.username} · ${formatNumber(stats.totalLifetimeContributions)} lifetime contributions`, {

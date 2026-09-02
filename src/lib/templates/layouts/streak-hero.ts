@@ -1,7 +1,7 @@
 import type { GitHubStats, ThemePalette } from "@/types";
 import { formatNumber } from "@/lib/utils";
 import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
-import { gradientBorder, streakCard, heatmapStrip } from "../core/charts";
+import { subtleFrame, streakCard, heatmapStrip } from "../core/charts";
 
 const W = 760;
 const H = 280;
@@ -12,7 +12,7 @@ export function streakHero(stats: GitHubStats, palette: ThemePalette): string {
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 12)}
-    ${gradientBorder(W, H, "gb-sh", palette)}
+    ${subtleFrame(W, H, palette)}
 
     ${text(28, 36, name, { fill: palette.text, size: 18, weight: 800 })}
     ${text(28, 56, `@${stats.username} · Rank ${stats.rank}`, { fill: palette.textMuted, size: 10 })}

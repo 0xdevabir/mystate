@@ -46,6 +46,7 @@ async function githubFetch<T>(path: string): Promise<T> {
     next: { revalidate: 3600 },
   });
   if (res.status === 404) throw new Error("USER_NOT_FOUND");
+  if (res.status === 403) throw new Error("RATE_LIMITED");
   if (!res.ok) throw new Error(`GITHUB_API_ERROR:${res.status}`);
   return res.json() as Promise<T>;
 }

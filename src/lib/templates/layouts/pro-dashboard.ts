@@ -2,7 +2,7 @@ import type { GitHubStats, ThemePalette } from "@/types";
 import { formatNumber } from "@/lib/utils";
 import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
 import {
-  gradientBorder,
+  subtleFrame,
   card,
   areaChart,
   rankBadge,
@@ -57,7 +57,7 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 14)}
-    ${gradientBorder(W, H, "gb-pro", palette)}
+    ${subtleFrame(W, H, palette)}
 
     ${text(W / 2, 36, name, { fill: palette.accent, size: 20, weight: 800, anchor: "middle" })}
     ${text(W / 2, 56, `@${stats.username}`, { fill: palette.textMuted, size: 11, anchor: "middle" })}
@@ -84,7 +84,7 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
     ${languageBarDetailed(stats.topLanguages, 36 + cardW + 8, 248, cardW - 48, palette)}
 
     ${streakCard(24, bottomY, streakW, 88, "✦", "Total Contributions", formatNumber(stats.totalLifetimeContributions), `${joined} – Present`, palette, palette.accent)}
-    ${streakCard(28 + streakW, bottomY, streakW, 88, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, "#ff8a65")}
+    ${streakCard(28 + streakW, bottomY, streakW, 88, "🔥", "Current Streak", stats.currentStreak, stats.currentStreakRange, palette, palette.highlight)}
     ${streakCard(32 + streakW * 2, bottomY, streakW, 88, "↻", "Longest Streak", stats.longestStreak, stats.longestStreakRange, palette, palette.highlight)}
 
     ${text(24, H - 10, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
@@ -100,3 +100,4 @@ export const proDashboardMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
+

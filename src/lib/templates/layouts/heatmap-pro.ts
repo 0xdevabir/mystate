@@ -1,7 +1,7 @@
 import type { GitHubStats, ThemePalette } from "@/types";
 import { formatNumber } from "@/lib/utils";
 import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
-import { gradientBorder, heatmapStrip, rankBadge } from "../core/charts";
+import { subtleFrame, heatmapStrip, rankBadge } from "../core/charts";
 
 const W = 780;
 const H = 220;
@@ -11,7 +11,7 @@ export function heatmapPro(stats: GitHubStats, palette: ThemePalette): string {
 
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette, 10)}
-    ${gradientBorder(W, H, "gb-hm", palette)}
+    ${subtleFrame(W, H, palette)}
 
     ${text(24, 32, name, { fill: palette.text, size: 15, weight: 800 })}
     ${text(24, 50, `@${stats.username}`, { fill: palette.textMuted, size: 10 })}

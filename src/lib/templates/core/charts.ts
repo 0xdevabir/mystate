@@ -2,21 +2,24 @@ import type { GitHubStats, ThemePalette } from "@/types";
 import { formatNumber } from "@/lib/utils";
 import { text } from "./svg";
 
+export function subtleFrame(
+  w: number,
+  h: number,
+  palette: ThemePalette,
+  rx = 14,
+): string {
+  return `
+    <rect x="0.5" y="0.5" width="${w - 1}" height="${h - 1}" rx="${rx}" fill="none" stroke="${palette.border}" stroke-width="1" opacity="0.55"/>
+    <rect x="1.5" y="1.5" width="${w - 3}" height="${h - 3}" rx="${rx - 1}" fill="none" stroke="${palette.text}" stroke-width="0.5" opacity="0.04"/>`;
+}
+
 export function gradientBorder(
   w: number,
   h: number,
-  id: string,
+  _id: string,
   palette: ThemePalette,
 ): string {
-  return `
-    <defs>
-      <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="${palette.highlight}"/>
-        <stop offset="50%" stop-color="${palette.accent}"/>
-        <stop offset="100%" stop-color="${palette.rankRing}"/>
-      </linearGradient>
-    </defs>
-    <rect x="0.5" y="0.5" width="${w - 1}" height="${h - 1}" rx="14" fill="none" stroke="url(#${id})" stroke-width="1.5" opacity="0.7"/>`;
+  return subtleFrame(w, h, palette);
 }
 
 export function card(
@@ -27,7 +30,13 @@ export function card(
   palette: ThemePalette,
   rx = 10,
 ): string {
-  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${palette.card}" stroke="${palette.border}" stroke-width="1"/>`;
+  const glassShine =
+    palette.id === "glass"
+      ? `<rect x="${x + 1}" y="${y + 1}" width="${w - 2}" height="${Math.min(h * 0.45, 48)}" rx="${rx - 1}" fill="${palette.text}" opacity="0.04"/>`
+      : "";
+  return `
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${palette.card}" stroke="${palette.border}" stroke-width="1" opacity="${palette.id === "glass" ? "0.92" : "1"}"/>
+    ${glassShine}`;
 }
 
 export function areaChart(
