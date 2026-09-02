@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import type { TemplateMeta } from "@/types";
+import { buildEmbedUrl } from "@/lib/utils";
 
 interface TemplateCardProps {
   template: TemplateMeta;
   username: string;
+  colorTheme: string;
   selected: boolean;
   onSelect: (id: string) => void;
   index: number;
@@ -14,12 +16,13 @@ interface TemplateCardProps {
 export function TemplateCard({
   template,
   username,
+  colorTheme,
   selected,
   onSelect,
   index,
 }: TemplateCardProps) {
   const previewUrl = username
-    ? `/api/stats?username=${encodeURIComponent(username)}&theme=${template.id}`
+    ? buildEmbedUrl(username, template.id, colorTheme)
     : null;
 
   return (
@@ -35,34 +38,46 @@ export function TemplateCard({
       }`}
     >
       <div className="p-6 sm:p-8">
-        <span
-          className={`mb-4 block text-[11px] font-bold uppercase tracking-widest transition-colors ${
-            selected ? "text-accent" : "text-accent/60 group-hover:text-accent"
-          }`}
-        >
-          {String(index + 1).padStart(2, "0")}
-        </span>
+        <div className="mb-4 flex items-center justify-between">
+          <span
+            className={`text-[11px] font-bold uppercase tracking-widest transition-colors ${
+              selected ? "text-accent" : "text-accent/60 group-hover:text-accent"
+            }`}
+          >
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="text-[10px] font-bold text-dark/30 group-hover:text-bg/40">
+            {template.width}×{template.height}
+          </span>
+        </div>
 
         <div
-          className="mb-5 overflow-hidden rounded-lg"
-          style={{ background: template.preview.bg }}
+          className="mb-5 overflow-x-auto overflow-y-hidden rounded-lg border border-dark/5"
+          style={{ background: template.previewBg }}
         >
           {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={previewUrl}
               alt={`${template.name} preview`}
-              className="w-full"
+              className="w-full min-w-[280px]"
               loading="lazy"
             />
           ) : (
-            <div className="flex h-[78px] items-center justify-center">
+            <div
+              className="flex items-center justify-center"
+              style={{ height: Math.min(template.height * 0.4, 120) }}
+            >
               <div className="flex gap-2">
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="h-6 w-10 rounded bg-white/10"
-                    style={{ opacity: 0.3 + i * 0.15 }}
+                    className="rounded bg-white/10"
+                    style={{
+                      width: 40 + i * 8,
+                      height: 24,
+                      opacity: 0.2 + i * 0.15,
+                    }}
                   />
                 ))}
               </div>
@@ -79,7 +94,7 @@ export function TemplateCard({
 
         {selected && (
           <span className="mt-4 inline-block text-[12px] font-bold uppercase tracking-widest text-accent">
-            Selected
+            Selected layout
           </span>
         )}
       </div>

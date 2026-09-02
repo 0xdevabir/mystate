@@ -4,18 +4,23 @@ import { motion } from "framer-motion";
 import type { TemplateMeta } from "@/types";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 import { TemplateCard } from "./TemplateCard";
+import { ThemePicker } from "./ThemePicker";
 
 interface TemplateGalleryProps {
   templates: TemplateMeta[];
   username: string;
+  selectedTemplate: string;
   selectedTheme: string;
+  onSelectTemplate: (id: string) => void;
   onSelectTheme: (id: string) => void;
 }
 
 export function TemplateGallery({
   templates,
   username,
+  selectedTemplate,
   selectedTheme,
+  onSelectTemplate,
   onSelectTheme,
 }: TemplateGalleryProps) {
   return (
@@ -28,28 +33,32 @@ export function TemplateGallery({
           transition={{ duration: 0.6 }}
           className="mb-16 md:mb-20"
         >
-          <SectionLabel>Templates</SectionLabel>
-          <SectionTitle>Choose your style.</SectionTitle>
-          <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-dark/55">
-            {username ? (
+          <SectionLabel>Layouts</SectionLabel>
+          <SectionTitle>Pick a layout.</SectionTitle>
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-dark/55">
+            Each layout arranges your stats differently. Color themes change the
+            palette — content stays the same.
+            {username && (
               <>
-                Showing live previews for{" "}
+                {" "}
+                Previewing{" "}
                 <span className="font-bold text-dark">@{username}</span>
               </>
-            ) : (
-              "Enter your username above to see your stats rendered in each template."
             )}
           </p>
+
+          <ThemePicker selected={selectedTheme} onSelect={onSelectTheme} />
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-px bg-dark/10 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-dark/10 md:grid-cols-2">
           {templates.map((template, index) => (
             <TemplateCard
               key={template.id}
               template={template}
               username={username}
-              selected={selectedTheme === template.id}
-              onSelect={onSelectTheme}
+              colorTheme={selectedTheme}
+              selected={selectedTemplate === template.id}
+              onSelect={onSelectTemplate}
               index={index}
             />
           ))}
