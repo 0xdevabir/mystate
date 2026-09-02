@@ -23,8 +23,6 @@ export function streakHero(stats: GitHubStats, palette: ThemePalette): string {
 
     ${text(28, 188, "Contribution Heatmap", { fill: palette.textMuted, size: 9, weight: 600 })}
     ${heatmapStrip(stats.contributionDays, 28, 200, W - 56, 48, palette)}
-
-    ${text(28, H - 12, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
   ${svgClose()}`;
 }
 

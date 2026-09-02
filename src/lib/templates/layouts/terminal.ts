@@ -1,6 +1,6 @@
 import type { GitHubStats, ThemePalette } from "@/types";
 import { escapeXml } from "@/lib/utils";
-import { svgOpen, svgClose, bgRect, text, footer, displayName } from "../core/svg";
+import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
 
 const W = 540;
 const H = 400;
@@ -54,7 +54,6 @@ export function terminal(stats: GitHubStats, palette: ThemePalette): string {
       family: "ui-monospace,monospace",
     })}
     ${body}
-    ${footer(16, H - 8, palette)}
   ${svgClose()}`;
 }
 

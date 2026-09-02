@@ -36,7 +36,7 @@ export function cleanSlate(stats: GitHubStats, palette: ThemePalette): string {
     ${topLang ? text(84, 106, `${topLang.name} · ${topLang.percentage}%`, { fill: palette.accent, size: 9 }) : ""}
     <line x1="180" y1="48" x2="180" y2="${H - 32}" stroke="${palette.border}" stroke-width="1"/>
     ${row}
-    ${text(24, H - 12, `mystate.devabir.me · ${formatNumber(stats.followers)} followers`, {
+    ${text(24, H - 12, `${formatNumber(stats.followers)} followers`, {
       fill: palette.textMuted,
       size: 8,
       opacity: 0.5,

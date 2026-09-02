@@ -227,7 +227,7 @@ function calculateRank(contributions: number, stars: number): string {
 }
 
 const GRAPHQL_QUERY = `
-  query UserStats($username: String!, $from: DateTime!, $yearFrom: DateTime!, $to: DateTime!) {
+  query UserStats($username: String!, $yearFrom: DateTime!, $to: DateTime!) {
     user(login: $username) {
       login
       name
@@ -251,16 +251,6 @@ const GRAPHQL_QUERY = `
         restrictedContributionsCount
         contributionCalendar {
           totalContributions
-          weeks {
-            contributionDays {
-              contributionCount
-              date
-            }
-          }
-        }
-      }
-      lifetimeContributions: contributionsCollection(from: $from, to: $to) {
-        contributionCalendar {
           weeks {
             contributionDays {
               contributionCount
@@ -307,11 +297,6 @@ interface GraphQLUser {
       restrictedContributionsCount: number;
       contributionCalendar: {
         totalContributions: number;
-        weeks: { contributionDays: { contributionCount: number; date: string }[] }[];
-      };
-    };
-    lifetimeContributions: {
-      contributionCalendar: {
         weeks: { contributionDays: { contributionCount: number; date: string }[] }[];
       };
     };
@@ -438,7 +423,6 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
 
   const data = await githubGraphQL<GraphQLUser>(GRAPHQL_QUERY, {
     username: clean,
-    from: "2015-01-01T00:00:00Z",
     yearFrom: yearFrom.toISOString(),
     to: to.toISOString(),
   });
@@ -448,8 +432,7 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
   const c = u.recentContributions;
   const calendar = c.contributionCalendar;
   const recentDays = parseCalendarDays(calendar.weeks);
-  const lifetimeDays = parseCalendarDays(u.lifetimeContributions.contributionCalendar.weeks);
-  const streaks = computeStreaks(lifetimeDays.length > 0 ? lifetimeDays : recentDays);
+  const streaks = computeStreaks(recentDays);
 
   let totalStars = 0;
   let totalForks = 0;
@@ -468,7 +451,7 @@ async function fetchViaGraphQL(clean: string): Promise<GitHubStats> {
   const analytics = {
     contributionsLastYear: calendar.totalContributions,
     contributedTo: u.repositoriesContributedTo.totalCount,
-    totalLifetimeContributions: lifetimeDays.reduce((s, d) => s + d.count, 0),
+    totalLifetimeContributions: recentDays.reduce((s, d) => s + d.count, 0),
     monthlyContributions: aggregateMonthly(recentDays),
     contributionDays: recentDays,
     joinedLabel: joinedLabel(u.createdAt),

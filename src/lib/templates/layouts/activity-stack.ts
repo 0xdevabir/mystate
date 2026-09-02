@@ -7,7 +7,6 @@ import {
   text,
   statCell,
   languageBar,
-  footer,
   displayName,
   divider,
   sectionTitle,
@@ -99,7 +98,6 @@ export function activityStack(stats: GitHubStats, palette: ThemePalette): string
     ${sectionBlocks}
     <rect x="16" y="${langY}" width="${W - 32}" height="44" rx="5" fill="${palette.card}"/>
     ${languageBar(stats.topLanguages, 22, langY + 10, W - 44, palette)}
-    ${footer(16, H - 8, palette)}
   ${svgClose()}`;
 }
 

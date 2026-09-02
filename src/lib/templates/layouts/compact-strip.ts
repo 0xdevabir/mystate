@@ -4,7 +4,6 @@ import {
   svgClose,
   bgRect,
   text,
-  footer,
   displayName,
   allStatFields,
 } from "../core/svg";
@@ -50,7 +49,6 @@ export function compactStrip(stats: GitHubStats, palette: ThemePalette): string 
       size: 8,
     })}
     ${segments}
-    ${footer(W - 110, H - 8, palette)}
   ${svgClose()}`;
 }
 

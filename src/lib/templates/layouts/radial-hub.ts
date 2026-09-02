@@ -6,7 +6,6 @@ import {
   bgRect,
   avatar,
   text,
-  footer,
   displayName,
 } from "../core/svg";
 
@@ -60,7 +59,6 @@ export function radialHub(stats: GitHubStats, palette: ThemePalette): string {
     ${avatar(stats.avatar, cx - 36, cy - 36, 72, palette)}
     ${text(cx, cy + 58, name, { fill: palette.text, size: 13, weight: 700, anchor: "middle" })}
     ${text(cx, cy + 74, `@${stats.username}`, { fill: palette.textMuted, size: 9, anchor: "middle" })}
-    ${footer(16, H - 8, palette)}
   ${svgClose()}`;
 }
 

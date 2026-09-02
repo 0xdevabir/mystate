@@ -1,6 +1,6 @@
 import type { GitHubStats, ThemePalette, TemplateMeta } from "@/types";
 import { formatNumber } from "@/lib/utils";
-import { svgOpen, svgClose, bgRect, text, displayName, footer, avatar } from "../core/svg";
+import { svgOpen, svgClose, bgRect, text, displayName, avatar } from "../core/svg";
 import {
   subtleFrame,
   card,
@@ -24,7 +24,6 @@ function cardShell(
     ${subtleFrame(w, h, palette)}
     ${title ? text(20, 28, title, { fill: palette.text, size: 12, weight: 700 }) : ""}
     ${body}
-    ${footer(20, h - 8, palette)}
   ${svgClose()}`;
 }
 

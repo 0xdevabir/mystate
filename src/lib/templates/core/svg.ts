@@ -150,15 +150,6 @@ export function languageBar(
   return `${segments}${labels}`;
 }
 
-export function footer(
-  x: number,
-  y: number,
-  palette: ThemePalette,
-  label = "mystate.devabir.me",
-): string {
-  return text(x, y, label, { fill: palette.textMuted, size: 8, opacity: 0.5 });
-}
-
 export function allStatFields(stats: GitHubStats): {
   label: string;
   value: number | string;

@@ -158,7 +158,6 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
       palette.highlight,
     )}
 
-    ${text(pad, H - 12, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
   ${svgClose()}`;
 }
 

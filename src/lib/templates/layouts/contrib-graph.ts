@@ -40,7 +40,6 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
     ${card(chartX, 68, chartW, H - 92, palette)}
     ${text(chartX + 16, 92, "Contribution Activity", { fill: palette.text, size: 11, weight: 700 })}
     ${areaChart(stats.monthlyContributions, chartX + 16, 104, chartW - 32, H - 148, palette, "cg")}
-    ${text(28, H - 10, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
   ${svgClose()}`;
 }
 

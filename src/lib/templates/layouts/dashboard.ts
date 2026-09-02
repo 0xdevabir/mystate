@@ -7,7 +7,6 @@ import {
   statCell,
   sectionTitle,
   languageBar,
-  footer,
   displayName,
   divider,
 } from "../core/svg";
@@ -57,7 +56,6 @@ export function dashboard(stats: GitHubStats, palette: ThemePalette): string {
     ${renderCol("Social", socialStats, 396)}
     <rect x="16" y="${H - 52}" width="${W - 32}" height="40" rx="6" fill="${palette.card}"/>
     ${languageBar(stats.topLanguages, 24, H - 48, W - 48, palette)}
-    ${footer(20, H - 6, palette)}
   ${svgClose()}`;
 }
 

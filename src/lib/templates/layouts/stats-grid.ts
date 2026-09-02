@@ -5,7 +5,6 @@ import {
   bgRect,
   text,
   languageBar,
-  footer,
   displayName,
   allStatFields,
 } from "../core/svg";
@@ -49,7 +48,6 @@ export function statsGrid(stats: GitHubStats, palette: ThemePalette): string {
     ${text(20, 32, displayName(stats), { fill: palette.text, size: 20, weight: 800 })}
     ${text(W - 20, 32, `@${stats.username}`, { fill: palette.textMuted, size: 12, anchor: "end" })}
     ${cells}
-    ${footer(20, H - 6, palette)}
   ${svgClose()}`;
 }
 

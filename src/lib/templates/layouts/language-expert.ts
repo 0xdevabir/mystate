@@ -1,5 +1,5 @@
 import type { GitHubStats, ThemePalette } from "@/types";
-import { svgOpen, svgClose, bgRect, text, displayName, footer } from "../core/svg";
+import { svgOpen, svgClose, bgRect, text, displayName } from "../core/svg";
 import {
   subtleFrame,
   card,
@@ -35,8 +35,6 @@ export function languageExpert(stats: GitHubStats, palette: ThemePalette): strin
     ${card(rightX, 206, rightW, 190, palette)}
     ${text(rightX + 16, 230, "By percentage", { fill: palette.text, size: 11, weight: 700 })}
     ${languageListRows(langs, rightX + 16, 248, rightW - 32, palette, 24, 6)}
-
-    ${footer(28, H - 8, palette)}
   ${svgClose()}`;
 }
 

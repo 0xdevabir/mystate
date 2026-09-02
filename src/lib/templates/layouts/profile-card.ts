@@ -7,7 +7,6 @@ import {
   text,
   statCell,
   languageBar,
-  footer,
   displayName,
   allStatFields,
 } from "../core/svg";
@@ -39,7 +38,6 @@ export function profileCard(stats: GitHubStats, palette: ThemePalette): string {
     ${statsGrid}
   <rect x="20" y="${H - 40}" width="${W - 40}" height="32" rx="6" fill="${palette.card}"/>
     ${languageBar(stats.topLanguages, 28, H - 36, W - 56, palette)}
-    ${footer(20, H - 6, palette)}
   ${svgClose()}`;
 }
 

@@ -6,7 +6,6 @@ import {
   avatar,
   text,
   languageBar,
-  footer,
   displayName,
   allStatFields,
 } from "../core/svg";
@@ -56,7 +55,6 @@ export function banner(stats: GitHubStats, palette: ThemePalette): string {
     ${ribbon}
     <rect x="16" y="${H - 36}" width="${W - 32}" height="32" rx="4" fill="${palette.card}"/>
     ${languageBar(stats.topLanguages, 20, H - 32, W - 40, palette)}
-    ${footer(W - 120, H - 10, palette)}
   ${svgClose()}`;
 }
 

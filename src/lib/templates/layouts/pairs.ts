@@ -1,6 +1,6 @@
 import type { GitHubStats, ThemePalette, TemplateMeta } from "@/types";
 import { formatNumber } from "@/lib/utils";
-import { svgOpen, svgClose, bgRect, text, displayName, footer, avatar } from "../core/svg";
+import { svgOpen, svgClose, bgRect, text, displayName, avatar } from "../core/svg";
 import {
   subtleFrame,
   card,
@@ -21,7 +21,6 @@ function pairShell(
     ${bgRect(w, h, palette, 12)}
     ${subtleFrame(w, h, palette)}
     ${body}
-    ${footer(24, h - 8, palette)}
   ${svgClose()}`;
 }
 

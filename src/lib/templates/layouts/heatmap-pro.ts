@@ -33,8 +33,6 @@ export function heatmapPro(stats: GitHubStats, palette: ThemePalette): string {
       ${[0.1, 0.3, 0.5, 0.7, 1].map((o, i) => `<rect x="${30 + i * 14}" y="-10" width="12" height="12" rx="2" fill="${palette.highlight}" opacity="${0.1 + o * 0.8}"/>`).join("")}
       ${text(110, 0, "More", { fill: palette.textMuted, size: 8 })}
     </g>
-
-    ${text(W - 24, H - 10, "mystate.devabir.me", { fill: palette.textMuted, size: 8, anchor: "end", opacity: 0.5 })}
   ${svgClose()}`;
 }
 
