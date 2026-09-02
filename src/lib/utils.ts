@@ -28,8 +28,15 @@ export function buildPreviewUrl(
   username: string,
   template: string,
   theme: string,
+  preview = true,
 ): string {
-  return `/api/stats?${statsParams(username, template, theme)}`;
+  const params = new URLSearchParams({
+    username,
+    template,
+    theme,
+  });
+  if (preview) params.set("preview", "1");
+  return `/api/stats?${params.toString()}`;
 }
 
 /** Absolute URL for README embed code. */
@@ -48,4 +55,5 @@ export function buildMarkdown(
 ): string {
   return `![MyState](${buildEmbedUrl(username, template, theme)})`;
 }
+
 

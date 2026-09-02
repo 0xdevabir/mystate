@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchGitHubStats } from "@/lib/github";
+import { getDemoStats } from "@/lib/demo-stats";
 import { DEFAULT_TEMPLATE, renderTemplate } from "@/lib/templates";
 import { DEFAULT_THEME } from "@/lib/themes";
+import { escapeXml } from "@/lib/utils";
 
 export const runtime = "nodejs";
 
@@ -11,31 +13,40 @@ export async function GET(request: NextRequest) {
   const template =
     searchParams.get("template") ?? searchParams.get("layout") ?? DEFAULT_TEMPLATE;
   const theme = searchParams.get("theme") ?? searchParams.get("color") ?? DEFAULT_THEME;
+  const isPreview = searchParams.get("preview") === "1";
 
   if (!username) {
-    return svgResponse(errorSvg("Missing username parameter"), 400);
+    return svgResponse(errorSvg("Missing username parameter"));
   }
 
   try {
     const stats = await fetchGitHubStats(username);
     const svg = renderTemplate(template, theme, stats);
-    return svgResponse(svg, 200);
+    return svgResponse(svg);
   } catch (error) {
     const message = error instanceof Error ? error.message : "UNKNOWN";
 
+    if (isPreview) {
+      const stats = getDemoStats(username);
+      const svg = renderTemplate(template, theme, stats);
+      return svgResponse(svg);
+    }
+
     if (message === "USER_NOT_FOUND") {
-      return svgResponse(errorSvg("User not found"), 200);
+      return svgResponse(errorSvg("User not found"));
     }
     if (message === "INVALID_USERNAME") {
-      return svgResponse(errorSvg("Invalid username"), 200);
+      return svgResponse(errorSvg("Invalid username"));
     }
 
     console.error("[stats]", message);
-    return svgResponse(errorSvg("Failed to fetch stats — check GITHUB_TOKEN"), 200);
+    return svgResponse(
+      errorSvg("Failed to fetch stats — add GITHUB_TOKEN on server"),
+    );
   }
 }
 
-function svgResponse(svg: string, _status: number) {
+function svgResponse(svg: string) {
   return new NextResponse(svg, {
     status: 200,
     headers: {
@@ -48,6 +59,6 @@ function svgResponse(svg: string, _status: number) {
 function errorSvg(message: string) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="495" height="80" viewBox="0 0 495 80">
     <rect width="495" height="80" rx="8" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
-    <text x="247" y="45" fill="#ef4444" font-size="14" font-family="system-ui,sans-serif" text-anchor="middle">${message}</text>
+    <text x="247" y="45" fill="#ef4444" font-size="13" font-family="system-ui,sans-serif" text-anchor="middle">${escapeXml(message)}</text>
   </svg>`;
 }
