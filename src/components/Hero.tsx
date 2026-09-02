@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { GitHubIcon } from "@/components/GitHubIcon";
 
 interface HeroProps {
   username: string;
@@ -67,7 +68,7 @@ export function Hero({ username, onUsernameChange, onSubmit, isLoading }: HeroPr
             }`}
           >
             <div className="flex items-center gap-2 pl-3 text-zinc-500">
-              <Github className="h-5 w-5" />
+              <GitHubIcon className="h-5 w-5" />
             </div>
             <input
               type="text"

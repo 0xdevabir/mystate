@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import { GitHubIcon } from "./GitHubIcon";
 
 export function Header() {
   return (
@@ -6,7 +6,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <a href="/" className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600">
-            <Github className="h-4 w-4 text-white" />
+            <GitHubIcon className="h-4 w-4 text-white" />
           </div>
           <span className="font-display text-lg font-semibold text-white">MyState</span>
         </a>

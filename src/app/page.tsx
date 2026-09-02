@@ -6,6 +6,7 @@ import { Hero } from "@/components/Hero";
 import { TemplateGallery } from "@/components/TemplateGallery";
 import { EmbedCode } from "@/components/EmbedCode";
 import { Footer } from "@/components/Footer";
+import { HowItWorks } from "@/components/HowItWorks";
 import { TEMPLATE_LIST, DEFAULT_THEME } from "@/lib/templates";
 
 export default function Home() {
@@ -55,6 +56,8 @@ export default function Home() {
           isLoading={isLoading}
         />
 
+        <HowItWorks />
+
         {error && (
           <div className="mx-auto -mt-8 mb-4 max-w-md px-6">
             <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
@@ -80,3 +83,4 @@ export default function Home() {
     </div>
   );
 }
+
