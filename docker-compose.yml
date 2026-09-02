@@ -1,0 +1,33 @@
+name: mystate
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: webnest/mystate:latest
+    container_name: mystate-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "127.0.0.1:3030:3000"
+    # Public, no-DB stats-card renderer expected to take real traffic —
+    # sized generously since headroom is cheap and a slow/OOM response here
+    # shows up as a broken image on someone else's GitHub README.
+    mem_limit: 2048m
+    cpus: "1.5"
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://127.0.0.1:3000/" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
