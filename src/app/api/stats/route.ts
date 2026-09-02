@@ -3,6 +3,7 @@ import { fetchGitHubStats } from "@/lib/github";
 import { getDemoStats } from "@/lib/demo-stats";
 import { DEFAULT_TEMPLATE, renderTemplate } from "@/lib/templates";
 import { DEFAULT_THEME } from "@/lib/themes";
+import { parseCustomColors } from "@/lib/themes/custom";
 import { escapeXml } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -14,6 +15,11 @@ export async function GET(request: NextRequest) {
     searchParams.get("template") ?? searchParams.get("layout") ?? DEFAULT_TEMPLATE;
   const theme = searchParams.get("theme") ?? searchParams.get("color") ?? DEFAULT_THEME;
   const isPreview = searchParams.get("preview") === "1";
+  const customColors = parseCustomColors(
+    searchParams.get("bg"),
+    searchParams.get("accent"),
+    searchParams.get("highlight"),
+  );
 
   if (!username) {
     return svgResponse(errorSvg("Missing username parameter"));
@@ -21,14 +27,14 @@ export async function GET(request: NextRequest) {
 
   try {
     const stats = await fetchGitHubStats(username);
-    const svg = renderTemplate(template, theme, stats);
+    const svg = renderTemplate(template, theme, stats, customColors ?? undefined);
     return svgResponse(svg);
   } catch (error) {
     const message = error instanceof Error ? error.message : "UNKNOWN";
 
     if (isPreview) {
       const stats = getDemoStats(username);
-      const svg = renderTemplate(template, theme, stats);
+      const svg = renderTemplate(template, theme, stats, customColors ?? undefined);
       return svgResponse(svg);
     }
 
@@ -62,3 +68,4 @@ function errorSvg(message: string) {
     <text x="247" y="45" fill="#ef4444" font-size="13" font-family="system-ui,sans-serif" text-anchor="middle">${escapeXml(message)}</text>
   </svg>`;
 }
+

@@ -59,6 +59,12 @@ export interface GitHubStats {
   topLanguages: LanguageStat[];
 }
 
+export interface CustomThemeColors {
+  bg: string;
+  accent: string;
+  highlight: string;
+}
+
 export interface ThemePalette {
   id: string;
   name: string;

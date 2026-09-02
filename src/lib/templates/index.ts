@@ -1,4 +1,5 @@
 import type { TemplateMeta, TemplateRenderer } from "@/types";
+import type { CustomThemeColors } from "@/types";
 import { getTheme } from "@/lib/themes";
 import { profileCard, profileCardMeta } from "./layouts/profile-card";
 import { dashboard, dashboardMeta } from "./layouts/dashboard";
@@ -54,9 +55,10 @@ export function renderTemplate(
   templateId: string,
   themeId: string,
   stats: Parameters<TemplateRenderer>[0],
+  customColors?: CustomThemeColors,
 ): string {
   const template = TEMPLATES[templateId] ?? TEMPLATES[DEFAULT_TEMPLATE];
-  const palette = getTheme(themeId);
+  const palette = getTheme(themeId, customColors);
   return template.render(stats, palette);
 }
 
@@ -67,4 +69,5 @@ export function getTemplateDimensions(templateId: string): {
   const template = TEMPLATES[templateId] ?? TEMPLATES[DEFAULT_TEMPLATE];
   return { width: template.meta.width, height: template.meta.height };
 }
+
 

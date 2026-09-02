@@ -9,13 +9,15 @@ import { EmbedCode } from "@/components/EmbedCode";
 import { Footer } from "@/components/Footer";
 import { HowItWorks } from "@/components/HowItWorks";
 import { DEFAULT_TEMPLATE } from "@/lib/templates";
-import { DEFAULT_THEME } from "@/lib/themes";
+import { DEFAULT_THEME, DEFAULT_CUSTOM_COLORS } from "@/lib/themes";
+import type { CustomThemeColors } from "@/types";
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const [activeUsername, setActiveUsername] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_TEMPLATE);
   const [selectedTheme, setSelectedTheme] = useState(DEFAULT_THEME);
+  const [customColors, setCustomColors] = useState<CustomThemeColors>(DEFAULT_CUSTOM_COLORS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,8 +70,10 @@ export default function Home() {
           username={activeUsername}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
+          customColors={customColors}
           onSelectTemplate={setSelectedTemplate}
           onSelectTheme={setSelectedTheme}
+          onCustomColorsChange={setCustomColors}
         />
 
         {activeUsername && (
@@ -77,6 +81,7 @@ export default function Home() {
             username={activeUsername}
             template={selectedTemplate}
             theme={selectedTheme}
+            customColors={customColors}
           />
         )}
       </main>
@@ -84,4 +89,5 @@ export default function Home() {
     </div>
   );
 }
+
 

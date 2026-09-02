@@ -1,4 +1,20 @@
-import type { ThemePalette } from "@/types";
+import type { CustomThemeColors, ThemePalette } from "@/types";
+import {
+  buildCustomPalette,
+  CUSTOM_THEME_ID,
+  DEFAULT_CUSTOM_COLORS,
+  parseCustomColors,
+} from "./custom";
+
+export {
+  buildCustomPalette,
+  CUSTOM_THEME_ID,
+  DEFAULT_CUSTOM_COLORS,
+  customColorsToParams,
+  normalizeHex,
+  parseCustomColors,
+  stripHash,
+} from "./custom";
 
 const base = (id: string, name: string, colors: Omit<ThemePalette, "id" | "name">): ThemePalette => ({
   id,
@@ -139,6 +155,25 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
 export const THEME_LIST = Object.values(THEME_PALETTES);
 export const DEFAULT_THEME = "dark";
 
-export function getTheme(id: string): ThemePalette {
+export function getTheme(id: string, customColors?: CustomThemeColors): ThemePalette {
+  if (id === CUSTOM_THEME_ID && customColors) {
+    return buildCustomPalette(customColors);
+  }
   return THEME_PALETTES[id] ?? THEME_PALETTES[DEFAULT_THEME];
 }
+
+export function resolveThemeFromParams(
+  themeId: string,
+  searchParams: { get(name: string): string | null },
+): ThemePalette {
+  if (themeId === CUSTOM_THEME_ID) {
+    const custom = parseCustomColors(
+      searchParams.get("bg"),
+      searchParams.get("accent"),
+      searchParams.get("highlight"),
+    );
+    if (custom) return buildCustomPalette(custom);
+  }
+  return getTheme(themeId);
+}
+

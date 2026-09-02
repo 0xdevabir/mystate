@@ -1,3 +1,6 @@
+import type { CustomThemeColors } from "@/types";
+import { CUSTOM_THEME_ID, customColorsToParams } from "@/lib/themes/custom";
+
 export function formatNumber(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
@@ -19,8 +22,17 @@ export function getBaseUrl(): string {
   return "http://localhost:3000";
 }
 
-function statsParams(username: string, template: string, theme: string): string {
-  return new URLSearchParams({ username, template, theme }).toString();
+function appendCustomColors(
+  params: URLSearchParams,
+  theme: string,
+  customColors?: CustomThemeColors,
+) {
+  if (theme === CUSTOM_THEME_ID && customColors) {
+    const colorParams = customColorsToParams(customColors);
+    params.set("bg", colorParams.bg);
+    params.set("accent", colorParams.accent);
+    params.set("highlight", colorParams.highlight);
+  }
 }
 
 /** Relative URL for in-app previews (works on localhost + production). */
@@ -29,6 +41,7 @@ export function buildPreviewUrl(
   template: string,
   theme: string,
   preview = true,
+  customColors?: CustomThemeColors,
 ): string {
   const params = new URLSearchParams({
     username,
@@ -36,6 +49,7 @@ export function buildPreviewUrl(
     theme,
   });
   if (preview) params.set("preview", "1");
+  appendCustomColors(params, theme, customColors);
   return `/api/stats?${params.toString()}`;
 }
 
@@ -44,16 +58,18 @@ export function buildEmbedUrl(
   username: string,
   template: string,
   theme: string,
+  customColors?: CustomThemeColors,
 ): string {
-  return `${getBaseUrl()}/api/stats?${statsParams(username, template, theme)}`;
+  const params = new URLSearchParams({ username, template, theme });
+  appendCustomColors(params, theme, customColors);
+  return `${getBaseUrl()}/api/stats?${params.toString()}`;
 }
 
 export function buildMarkdown(
   username: string,
   template: string,
   theme: string,
+  customColors?: CustomThemeColors,
 ): string {
-  return `![MyState](${buildEmbedUrl(username, template, theme)})`;
+  return `![MyState](${buildEmbedUrl(username, template, theme, customColors)})`;
 }
-
-

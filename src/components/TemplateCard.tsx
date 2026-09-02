@@ -1,8 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import type { TemplateMeta } from "@/types";
+import type { CustomThemeColors, TemplateMeta } from "@/types";
 import { buildPreviewUrl } from "@/lib/utils";
+import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
 
 const DEMO_USERNAME = "0xdevabir";
 
@@ -10,6 +11,7 @@ interface TemplateCardProps {
   template: TemplateMeta;
   username: string;
   colorTheme: string;
+  customColors?: CustomThemeColors;
   selected: boolean;
   onSelect: (id: string) => void;
   index: number;
@@ -20,13 +22,24 @@ export function TemplateCard({
   template,
   username,
   colorTheme,
+  customColors,
   selected,
   onSelect,
   index,
   compact = false,
 }: TemplateCardProps) {
   const previewUser = username || DEMO_USERNAME;
-  const previewUrl = buildPreviewUrl(previewUser, template.id, colorTheme);
+  const previewUrl = buildPreviewUrl(
+    previewUser,
+    template.id,
+    colorTheme,
+    true,
+    colorTheme === CUSTOM_THEME_ID ? customColors : undefined,
+  );
+  const previewKey =
+    colorTheme === CUSTOM_THEME_ID && customColors
+      ? `${previewUser}-${template.id}-${colorTheme}-${customColors.bg}-${customColors.accent}-${customColors.highlight}`
+      : `${previewUser}-${template.id}-${colorTheme}`;
 
   return (
     <motion.button
@@ -60,7 +73,7 @@ export function TemplateCard({
         >
           <AnimatePresence mode="wait">
             <motion.img
-              key={`${previewUser}-${template.id}-${colorTheme}`}
+              key={previewKey}
               src={previewUrl}
               alt={`${template.name} preview`}
               className="block w-full min-w-[240px]"
@@ -102,3 +115,4 @@ export function TemplateCard({
     </motion.button>
   );
 }
+

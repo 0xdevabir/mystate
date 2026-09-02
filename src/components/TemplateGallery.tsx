@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { TemplateMeta } from "@/types";
+import type { CustomThemeColors, TemplateMeta } from "@/types";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 import { TemplateCard } from "./TemplateCard";
 import { ThemePicker } from "./ThemePicker";
@@ -16,8 +16,10 @@ interface TemplateGalleryProps {
   username: string;
   selectedTemplate: string;
   selectedTheme: string;
+  customColors: CustomThemeColors;
   onSelectTemplate: (id: string) => void;
   onSelectTheme: (id: string) => void;
+  onCustomColorsChange: (colors: CustomThemeColors) => void;
 }
 
 function TemplateSection({
@@ -27,6 +29,7 @@ function TemplateSection({
   username,
   selectedTemplate,
   selectedTheme,
+  customColors,
   onSelectTemplate,
   startIndex,
   compact = false,
@@ -38,6 +41,7 @@ function TemplateSection({
   username: string;
   selectedTemplate: string;
   selectedTheme: string;
+  customColors: CustomThemeColors;
   onSelectTemplate: (id: string) => void;
   startIndex: number;
   compact?: boolean;
@@ -58,6 +62,7 @@ function TemplateSection({
             template={template}
             username={username}
             colorTheme={selectedTheme}
+            customColors={customColors}
             selected={selectedTemplate === template.id}
             onSelect={onSelectTemplate}
             index={startIndex + index}
@@ -73,8 +78,10 @@ export function TemplateGallery({
   username,
   selectedTemplate,
   selectedTheme,
+  customColors,
   onSelectTemplate,
   onSelectTheme,
+  onCustomColorsChange,
 }: TemplateGalleryProps) {
   const cardStart = PREMIUM_TEMPLATES.length + CLASSIC_TEMPLATES.length;
   const pairStart = cardStart + CARD_TEMPLATES.length;
@@ -93,9 +100,8 @@ export function TemplateGallery({
           <SectionTitle>Pick a layout.</SectionTitle>
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-dark/55">
             Premium layouts include contribution graphs, streaks, rank badges, and
-            detailed language breakdowns. Single cards and pairs let you mix
-            stats into your README. Color themes change the palette only — with
-            smooth transitions.
+            detailed language breakdowns. Single cards and pairs let you mix stats
+            into your README — or build your own palette with Custom colors.
             {username && (
               <>
                 {" "}
@@ -105,7 +111,12 @@ export function TemplateGallery({
             )}
           </p>
 
-          <ThemePicker selected={selectedTheme} onSelect={onSelectTheme} />
+          <ThemePicker
+            selected={selectedTheme}
+            onSelect={onSelectTheme}
+            customColors={customColors}
+            onCustomColorsChange={onCustomColorsChange}
+          />
 
           {!username && (
             <p className="mt-4 rounded-full border border-dark/10 bg-light/50 px-4 py-2 text-[13px] text-dark/50">
@@ -123,6 +134,7 @@ export function TemplateGallery({
           username={username}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
+          customColors={customColors}
           onSelectTemplate={onSelectTemplate}
           startIndex={0}
         />
@@ -134,6 +146,7 @@ export function TemplateGallery({
           username={username}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
+          customColors={customColors}
           onSelectTemplate={onSelectTemplate}
           startIndex={PREMIUM_TEMPLATES.length}
         />
@@ -145,6 +158,7 @@ export function TemplateGallery({
           username={username}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
+          customColors={customColors}
           onSelectTemplate={onSelectTemplate}
           startIndex={cardStart}
           compact
@@ -158,6 +172,7 @@ export function TemplateGallery({
           username={username}
           selectedTemplate={selectedTemplate}
           selectedTheme={selectedTheme}
+          customColors={customColors}
           onSelectTemplate={onSelectTemplate}
           startIndex={pairStart}
           columns="lg:grid-cols-2"

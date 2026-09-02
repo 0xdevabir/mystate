@@ -4,23 +4,31 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Copy } from "lucide-react";
 import { buildEmbedUrl, buildMarkdown, buildPreviewUrl } from "@/lib/utils";
+import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
+import type { CustomThemeColors } from "@/types";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
 
 interface EmbedCodeProps {
   username: string;
   template: string;
   theme: string;
+  customColors?: CustomThemeColors;
 }
 
-export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
+export function EmbedCode({ username, template, theme, customColors }: EmbedCodeProps) {
   const [copied, setCopied] = useState(false);
   const [format, setFormat] = useState<"markdown" | "html">("markdown");
 
   if (!username) return null;
 
-  const markdown = buildMarkdown(username, template, theme);
-  const html = `<img src="${buildEmbedUrl(username, template, theme)}" alt="My GitHub Stats" />`;
+  const colors = theme === CUSTOM_THEME_ID ? customColors : undefined;
+  const markdown = buildMarkdown(username, template, theme, colors);
+  const html = `<img src="${buildEmbedUrl(username, template, theme, colors)}" alt="My GitHub Stats" />`;
   const code = format === "markdown" ? markdown : html;
+  const previewKey =
+    theme === CUSTOM_THEME_ID && customColors
+      ? `${username}-${template}-${theme}-${customColors.bg}-${customColors.accent}-${customColors.highlight}`
+      : `${username}-${template}-${theme}`;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(code);
@@ -118,8 +126,8 @@ export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
           <div className="mt-6 overflow-x-auto rounded-xl bg-bg/5 p-4">
             <AnimatePresence mode="wait">
               <motion.img
-                key={`${username}-${template}-${theme}`}
-                src={buildPreviewUrl(username, template, theme)}
+                key={previewKey}
+                src={buildPreviewUrl(username, template, theme, true, colors)}
                 alt="Stats preview"
                 className="mx-auto max-w-none rounded-lg"
                 initial={{ opacity: 0, scale: 0.98 }}
@@ -134,5 +142,3 @@ export function EmbedCode({ username, template, theme }: EmbedCodeProps) {
     </motion.section>
   );
 }
-
-
