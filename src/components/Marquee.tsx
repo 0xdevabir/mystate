@@ -1,8 +1,10 @@
+import { TEMPLATE_LIST } from "@/lib/templates";
+
 const items = [
   "GitHub Stats",
   "README Cards",
   "Live Previews",
-  "9 Templates",
+  `${TEMPLATE_LIST.length} Templates`,
   "One-Line Embed",
   "Open Source",
   "Developer Tools",
@@ -28,3 +30,4 @@ export function Marquee() {
     </div>
   );
 }
+
