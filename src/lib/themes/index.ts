@@ -1,9 +1,13 @@
 import type { ThemePalette } from "@/types";
 
+const base = (id: string, name: string, colors: Omit<ThemePalette, "id" | "name">): ThemePalette => ({
+  id,
+  name,
+  ...colors,
+});
+
 export const THEME_PALETTES: Record<string, ThemePalette> = {
-  dark: {
-    id: "dark",
-    name: "Dark",
+  dark: base("dark", "Dark", {
     bg: "#0d1117",
     bgSecondary: "#161b22",
     card: "#21262d",
@@ -14,10 +18,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#8b949e",
     statValue: "#e6edf3",
     highlight: "#3fb950",
-  },
-  light: {
-    id: "light",
-    name: "Light",
+    chartLine: "#58a6ff",
+    chartFill: "#58a6ff",
+    rankRing: "#1f6feb",
+  }),
+  light: base("light", "Light", {
     bg: "#ffffff",
     bgSecondary: "#f6f8fa",
     card: "#f6f8fa",
@@ -28,10 +33,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#656d76",
     statValue: "#1f2328",
     highlight: "#1a7f37",
-  },
-  "dark-green": {
-    id: "dark-green",
-    name: "Dark Green",
+    chartLine: "#0969da",
+    chartFill: "#0969da",
+    rankRing: "#0969da",
+  }),
+  "dark-green": base("dark-green", "Dark Green", {
     bg: "#0a1612",
     bgSecondary: "#0f1f1a",
     card: "#142820",
@@ -42,10 +48,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#6b9b7a",
     statValue: "#d4edda",
     highlight: "#3dd68c",
-  },
-  ocean: {
-    id: "ocean",
-    name: "Ocean",
+    chartLine: "#3dd68c",
+    chartFill: "#3dd68c",
+    rankRing: "#2ea043",
+  }),
+  ocean: base("ocean", "Ocean", {
     bg: "#0c1929",
     bgSecondary: "#0f2744",
     card: "#132f4c",
@@ -56,10 +63,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#6b9ac4",
     statValue: "#e3f2fd",
     highlight: "#4fc3f7",
-  },
-  sunset: {
-    id: "sunset",
-    name: "Sunset",
+    chartLine: "#29b6f6",
+    chartFill: "#29b6f6",
+    rankRing: "#0288d1",
+  }),
+  sunset: base("sunset", "Sunset", {
     bg: "#1a0f0a",
     bgSecondary: "#2d1810",
     card: "#3d2218",
@@ -70,10 +78,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#c49a6c",
     statValue: "#fff3e0",
     highlight: "#ffab40",
-  },
-  purple: {
-    id: "purple",
-    name: "Purple",
+    chartLine: "#ff8a65",
+    chartFill: "#ff8a65",
+    rankRing: "#ff7043",
+  }),
+  purple: base("purple", "Purple", {
     bg: "#13091f",
     bgSecondary: "#1a0f2e",
     card: "#231538",
@@ -84,10 +93,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#9575cd",
     statValue: "#ede7f6",
     highlight: "#ea80fc",
-  },
-  nord: {
-    id: "nord",
-    name: "Nord",
+    chartLine: "#b388ff",
+    chartFill: "#b388ff",
+    rankRing: "#7c4dff",
+  }),
+  nord: base("nord", "Nord", {
     bg: "#2e3440",
     bgSecondary: "#3b4252",
     card: "#434c5e",
@@ -98,10 +108,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#81a1c1",
     statValue: "#eceff4",
     highlight: "#a3be8c",
-  },
-  dracula: {
-    id: "dracula",
-    name: "Dracula",
+    chartLine: "#88c0d0",
+    chartFill: "#88c0d0",
+    rankRing: "#5e81ac",
+  }),
+  dracula: base("dracula", "Dracula", {
     bg: "#282a36",
     bgSecondary: "#313341",
     card: "#383a4a",
@@ -112,10 +123,11 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#6272a4",
     statValue: "#f8f8f2",
     highlight: "#50fa7b",
-  },
-  wheat: {
-    id: "wheat",
-    name: "Wheat",
+    chartLine: "#bd93f9",
+    chartFill: "#bd93f9",
+    rankRing: "#ff79c6",
+  }),
+  wheat: base("wheat", "Wheat", {
     bg: "#f5edd6",
     bgSecondary: "#ebe3cc",
     card: "#faf6ec",
@@ -126,7 +138,10 @@ export const THEME_PALETTES: Record<string, ThemePalette> = {
     statLabel: "#6b6560",
     statValue: "#1b1b1b",
     highlight: "#a8bca1",
-  },
+    chartLine: "#2f3737",
+    chartFill: "#a8bca1",
+    rankRing: "#a8bca1",
+  }),
 };
 
 export const THEME_LIST = Object.values(THEME_PALETTES);

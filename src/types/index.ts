@@ -5,6 +5,16 @@ export interface LanguageStat {
   bytes?: number;
 }
 
+export interface MonthlyContribution {
+  month: string;
+  count: number;
+}
+
+export interface ContributionDay {
+  date: string;
+  count: number;
+}
+
 export interface GitHubStats {
   username: string;
   name: string | null;
@@ -16,6 +26,7 @@ export interface GitHubStats {
   twitter: string | null;
   createdAt: string;
   accountAge: string;
+  joinedLabel: string;
 
   publicRepos: number;
   publicGists: number;
@@ -32,6 +43,18 @@ export interface GitHubStats {
   totalPullRequests: number;
   totalReviews: number;
   totalContributions: number;
+  contributionsLastYear: number;
+  contributedTo: number;
+
+  totalLifetimeContributions: number;
+  currentStreak: number;
+  longestStreak: number;
+  currentStreakRange: string;
+  longestStreakRange: string;
+
+  rank: string;
+  monthlyContributions: MonthlyContribution[];
+  contributionDays: ContributionDay[];
 
   topLanguages: LanguageStat[];
 }
@@ -49,6 +72,9 @@ export interface ThemePalette {
   statLabel: string;
   statValue: string;
   highlight: string;
+  chartLine: string;
+  chartFill: string;
+  rankRing: string;
 }
 
 export interface TemplateMeta {
@@ -58,14 +84,10 @@ export interface TemplateMeta {
   width: number;
   height: number;
   previewBg: string;
+  category: "premium" | "classic";
 }
 
 export type TemplateRenderer = (
   stats: GitHubStats,
   palette: ThemePalette,
 ) => string;
-
-export interface RenderOptions {
-  width: number;
-  height: number;
-}
