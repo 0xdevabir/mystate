@@ -13,6 +13,7 @@ services:
       NODE_ENV: production
       PORT: "3000"
       HOSTNAME: 0.0.0.0
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
     ports:
       - "127.0.0.1:3030:3000"
     # Public, no-DB stats-card renderer expected to take real traffic —
@@ -31,3 +32,4 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+

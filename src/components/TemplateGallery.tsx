@@ -127,9 +127,7 @@ export function TemplateGallery({
 
           {!username && (
             <p className="mt-4 rounded-full border border-dark/10 bg-light/50 px-4 py-2 text-[13px] text-dark/50">
-              Enter a username above, or browse with demo data. Add{" "}
-              <span className="font-bold">GITHUB_TOKEN</span> on the server for
-              live contribution graphs, streaks, and language data.
+              Enter a username above, or browse templates with demo data.
             </p>
           )}
         </motion.div>
@@ -217,3 +215,4 @@ export function TemplateGallery({
     </section>
   );
 }
+

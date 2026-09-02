@@ -7,6 +7,7 @@ import { parseCustomColors } from "@/lib/themes/custom";
 import { escapeXml } from "@/lib/utils";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -46,9 +47,7 @@ export async function GET(request: NextRequest) {
     }
 
     console.error("[stats]", message);
-    return svgResponse(
-      errorSvg("Failed to fetch stats — add GITHUB_TOKEN on server"),
-    );
+    return svgResponse(errorSvg("Failed to fetch stats — please try again later"));
   }
 }
 
@@ -68,4 +67,5 @@ function errorSvg(message: string) {
     <text x="247" y="45" fill="#ef4444" font-size="13" font-family="system-ui,sans-serif" text-anchor="middle">${escapeXml(message)}</text>
   </svg>`;
 }
+
 

@@ -49,11 +49,13 @@ export function areaChart(
   uid: string,
 ): string {
   if (data.length === 0) {
-    return text(x + w / 2, y + h / 2, "No contribution data available", {
-      fill: palette.textMuted,
-      size: 10,
-      anchor: "middle",
-    });
+    const gridLines = [0.25, 0.5, 0.75].map(
+      (pct) =>
+        `<line x1="${x}" y1="${y + h * pct}" x2="${x + w}" y2="${y + h * pct}" stroke="${palette.border}" stroke-width="0.5" opacity="0.25"/>`,
+    );
+    return `
+      ${gridLines.join("")}
+      <line x1="${x}" y1="${y + h}" x2="${x + w}" y2="${y + h}" stroke="${palette.border}" stroke-width="1" opacity="0.35"/>`;
   }
 
   const max = Math.max(...data.map((d) => d.count), 1);
@@ -227,10 +229,10 @@ export function heatmapStrip(
 ): string {
   const recent = days.slice(-52);
   if (recent.length === 0) {
-    return text(x, y + h / 2, "No contribution activity data", {
-      fill: palette.textMuted,
-      size: 9,
-    });
+    const cellW = w / 52;
+    return Array.from({ length: 52 }, (_, i) =>
+      `<rect x="${x + i * cellW}" y="${y}" width="${Math.max(cellW - 1, 1)}" height="${h}" rx="1" fill="${palette.border}" opacity="0.12"/>`,
+    ).join("");
   }
 
   const cellW = w / recent.length;

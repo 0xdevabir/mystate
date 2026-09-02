@@ -30,13 +30,23 @@ const LANGUAGE_COLORS: Record<string, string> = {
   Jupyter: "#DA5B0B",
 };
 
+function getGitHubToken(): string | undefined {
+  const raw =
+    process.env.GITHUB_TOKEN ??
+    process.env.GH_TOKEN ??
+    process.env.GITHUB_PAT;
+  const token = raw?.trim().replace(/^['"]|['"]$/g, "");
+  return token || undefined;
+}
+
 function getHeaders(): HeadersInit {
   const headers: HeadersInit = {
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "MyState-Stats-Builder",
   };
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  const token = getGitHubToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
   return headers;
 }
@@ -44,7 +54,7 @@ function getHeaders(): HeadersInit {
 async function githubFetch<T>(path: string): Promise<T> {
   const res = await fetch(`https://api.github.com${path}`, {
     headers: getHeaders(),
-    next: { revalidate: 3600 },
+    cache: "no-store",
   });
   if (res.status === 404) throw new Error("USER_NOT_FOUND");
   if (res.status === 403) throw new Error("RATE_LIMITED");
@@ -60,7 +70,7 @@ async function githubGraphQL<T>(
     method: "POST",
     headers: { ...getHeaders(), "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate: 3600 },
+    cache: "no-store",
   });
   if (!res.ok) throw new Error(`GITHUB_GRAPHQL_ERROR:${res.status}`);
   const json = (await res.json()) as { data: T; errors?: { message: string }[] };
@@ -544,11 +554,13 @@ export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
     throw new Error("INVALID_USERNAME");
   }
 
-  if (process.env.GITHUB_TOKEN) {
+  const token = getGitHubToken();
+  if (token) {
     try {
       return await withEmbeddedAvatar(await fetchViaGraphQL(clean));
     } catch (error) {
-      console.error("[github] GraphQL failed, falling back to REST:", error);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[github] GraphQL failed, falling back to REST:", message);
       return withEmbeddedAvatar(await fetchViaREST(clean));
     }
   }
