@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import type { CustomThemeColors, TemplateMeta } from "@/types";
+import { getEmbedLayout } from "@/lib/embed-layout";
 import { EmbedCodePanel } from "./EmbedCodePanel";
 
 interface TemplateUseModalProps {
@@ -117,6 +118,7 @@ export function TemplateUseModal({
                 previewBg={template.previewBg}
                 templateWidth={template.width}
                 templateHeight={template.height}
+                embedLayout={getEmbedLayout(template)}
                 variant="light"
                 layout="modal"
                 usernameHint={
@@ -132,3 +134,4 @@ export function TemplateUseModal({
     </AnimatePresence>
   );
 }
+

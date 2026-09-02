@@ -71,5 +71,20 @@ export function buildMarkdown(
   theme: string,
   customColors?: CustomThemeColors,
 ): string {
-  return `![MyState](${buildEmbedUrl(username, template, theme, customColors)})`;
+  const url = buildEmbedUrl(username, template, theme, customColors);
+  return `![My GitHub Stats](${url})`;
 }
+
+/** @deprecated Use buildEmbedSnippet from embed-layout.ts for GitHub-optimized output */
+export function buildGithubHtml(
+  username: string,
+  template: string,
+  theme: string,
+  layout: "full" | "half",
+  customColors?: CustomThemeColors,
+): string {
+  const url = buildEmbedUrl(username, template, theme, customColors);
+  const width = layout === "full" ? "100%" : "49%";
+  return `<p align="center">\n  <img src="${url}" width="${width}" alt="My GitHub Stats" />\n</p>`;
+}
+

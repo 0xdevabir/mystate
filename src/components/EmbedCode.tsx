@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { TEMPLATES } from "@/lib/templates";
 import type { CustomThemeColors } from "@/types";
 import { EmbedCodePanel } from "./EmbedCodePanel";
 import { SectionLabel, SectionTitle } from "./SectionHeader";
@@ -14,6 +15,8 @@ interface EmbedCodeProps {
 
 export function EmbedCode({ username, template, theme, customColors }: EmbedCodeProps) {
   if (!username) return null;
+
+  const meta = TEMPLATES[template]?.meta;
 
   return (
     <motion.section
@@ -39,6 +42,8 @@ export function EmbedCode({ username, template, theme, customColors }: EmbedCode
             template={template}
             theme={theme}
             customColors={customColors}
+            templateWidth={meta?.width}
+            templateHeight={meta?.height}
             variant="dark"
           />
         </div>
@@ -46,3 +51,4 @@ export function EmbedCode({ username, template, theme, customColors }: EmbedCode
     </motion.section>
   );
 }
+

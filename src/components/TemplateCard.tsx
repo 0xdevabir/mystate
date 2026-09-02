@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { CustomThemeColors, TemplateMeta } from "@/types";
 import { buildPreviewUrl } from "@/lib/utils";
 import { CUSTOM_THEME_ID } from "@/lib/themes/custom";
+import { getEmbedLayout, getEmbedLayoutLabel } from "@/lib/embed-layout";
 import { TemplatePreview } from "./TemplatePreview";
 
 const DEMO_USERNAME = "0xdevabir";
@@ -41,6 +42,9 @@ export function TemplateCard({
     colorTheme === CUSTOM_THEME_ID ? customColors : undefined,
   );
 
+  const embedLayout = getEmbedLayout(template);
+  const layoutLabel = getEmbedLayoutLabel(embedLayout);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -69,6 +73,10 @@ export function TemplateCard({
               {template.width}×{template.height}
             </span>
           </div>
+
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-dark/35 transition-colors group-hover:text-bg/40">
+            {layoutLabel}
+          </p>
 
           <div
             className="relative mb-5 overflow-hidden rounded-lg border border-dark/5 transition-colors duration-500"
@@ -124,3 +132,4 @@ export function TemplateCard({
     </motion.article>
   );
 }
+
