@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   description:
     "Create stunning GitHub stats cards for your profile README. Pick a template, copy one line of code, and showcase your developer journey.",
   metadataBase: new URL("https://mystate.devabir.me"),
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     title: "MyState — Beautiful GitHub Stats",
     description: "Create stunning GitHub stats cards for your profile README.",
@@ -39,3 +43,4 @@ export default function RootLayout({
     </html>
   );
 }
+
