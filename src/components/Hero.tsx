@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
 import { GitHubIcon } from "@/components/GitHubIcon";
 
 interface HeroProps {
@@ -16,58 +15,61 @@ export function Hero({ username, onUsernameChange, onSubmit, isLoading }: HeroPr
   const [focused, setFocused] = useState(false);
 
   return (
-    <section className="relative px-6 pt-24 pb-16 md:pt-32 md:pb-24">
-      <div className="mx-auto max-w-3xl text-center">
+    <section className="flex min-h-[85vh] flex-col items-center justify-center px-6 pb-16 pt-28 md:pt-32">
+      <div className="mx-auto w-full max-w-4xl text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-sm text-violet-300"
+          initial={{ opacity: 0, filter: "blur(8px)", y: 28 }}
+          animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="leading-none"
         >
-          <Sparkles className="h-3.5 w-3.5" />
-          Beautiful GitHub stats for your profile
+          <h1 className="text-[56px] font-black sm:text-[88px] md:text-[120px] lg:text-[140px]">
+            <span className="text-dark">my</span>
+            <span className="text-accent">state</span>
+          </h1>
+          <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 sm:gap-x-6">
+            {["Pick.", "Preview.", "Paste.", "Done."].map((word, i) => (
+              <motion.p
+                key={word}
+                initial={{ opacity: 0, filter: "blur(4px)", y: 16 }}
+                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 + i * 0.08 }}
+                className={`text-[16px] font-black sm:text-[22px] md:text-[30px] ${
+                  i % 2 === 1 ? "text-accent" : "text-dark"
+                }`}
+              >
+                {word}
+              </motion.p>
+            ))}
+          </div>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-display text-4xl font-bold tracking-tight text-white md:text-6xl"
-        >
-          Your GitHub story,
-          <br />
-          <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-            beautifully told
-          </span>
-        </motion.h1>
-
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mx-auto mt-6 max-w-lg text-lg text-zinc-400"
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mx-auto mt-8 max-w-md text-[15px] leading-relaxed text-dark/55"
         >
-          Pick a template, copy one line of code, and add stunning stats to your GitHub README.
+          Beautiful GitHub stats for your profile README. Enter your username, choose a
+          template, copy one line of code.
         </motion.p>
 
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
           onSubmit={(e) => {
             e.preventDefault();
             onSubmit();
           }}
-          className="mx-auto mt-10 max-w-md"
+          className="mx-auto mt-10 max-w-lg"
         >
           <div
-            className={`flex items-center gap-2 rounded-2xl border bg-zinc-900/80 p-2 backdrop-blur-sm transition-all duration-300 ${
-              focused
-                ? "border-violet-500/50 shadow-lg shadow-violet-500/10"
-                : "border-zinc-800"
+            className={`flex items-center gap-2 rounded-full border bg-light/80 p-2 transition-all duration-300 ${
+              focused ? "border-accent shadow-[0_8px_30px_#a8bca130]" : "border-dark/10"
             }`}
           >
-            <div className="flex items-center gap-2 pl-3 text-zinc-500">
+            <div className="flex items-center pl-4 text-dark/40">
               <GitHubIcon className="h-5 w-5" />
             </div>
             <input
@@ -76,18 +78,25 @@ export function Hero({ username, onUsernameChange, onSubmit, isLoading }: HeroPr
               onChange={(e) => onUsernameChange(e.target.value)}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              placeholder="Enter GitHub username"
-              className="flex-1 bg-transparent py-3 text-white placeholder:text-zinc-600 outline-none"
+              placeholder="github username"
+              className="flex-1 bg-transparent py-3.5 text-[15px] text-dark placeholder:text-dark/30 outline-none"
               autoComplete="off"
               spellCheck={false}
             />
             <button
               type="submit"
               disabled={!username.trim() || isLoading}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 py-3 text-sm font-medium text-white transition-all hover:from-violet-500 hover:to-fuchsia-500 disabled:cursor-not-allowed disabled:opacity-40"
+              className="group relative overflow-hidden rounded-full bg-dark px-6 py-3.5 text-[13px] font-bold text-bg transition-all duration-200 hover:-translate-y-0.5 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
             >
-              {isLoading ? "Loading..." : "Go"}
-              {!isLoading && <ArrowRight className="h-4 w-4" />}
+              <span className="absolute inset-0 -translate-x-full rounded-full bg-accent transition-transform duration-300 ease-out group-hover:translate-x-0 group-disabled:translate-x-0" />
+              <span className="relative z-10 transition-colors group-hover:text-dark">
+                {isLoading ? "Loading..." : "Generate"}
+              </span>
+              {!isLoading && (
+                <span className="relative z-10 ml-1 transition-all group-hover:translate-x-0.5 group-hover:text-dark">
+                  →
+                </span>
+              )}
             </button>
           </div>
         </motion.form>

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Copy, Code2 } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { buildEmbedUrl, buildMarkdown } from "@/lib/utils";
+import { SectionLabel, SectionTitle } from "./SectionHeader";
 
 interface EmbedCodeProps {
   username: string;
@@ -28,34 +29,33 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="px-6 py-16"
+      transition={{ duration: 0.6 }}
+      className="bg-dark px-6 py-24 md:py-28"
     >
-      <div className="mx-auto max-w-3xl">
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6 md:p-8">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
-                <Code2 className="h-5 w-5 text-violet-400" />
-              </div>
-              <div>
-                <h3 className="font-medium text-white">Your embed code</h3>
-                <p className="text-sm text-zinc-500">Paste this into your GitHub README</p>
-              </div>
-            </div>
+      <div className="mx-auto max-w-4xl">
+        <SectionLabel>Embed Code</SectionLabel>
+        <SectionTitle dark className="mb-12">
+          Copy & paste.
+        </SectionTitle>
 
-            <div className="flex rounded-lg border border-zinc-800 p-0.5">
+        <div className="rounded-2xl border border-bg/10 bg-ink p-6 md:p-8">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[14px] text-bg/55">
+              Add this to your <span className="font-mono text-accent">README.md</span>
+            </p>
+
+            <div className="flex rounded-full border border-bg/10 p-0.5">
               {(["markdown", "html"] as const).map((f) => (
                 <button
                   key={f}
                   type="button"
                   onClick={() => setFormat(f)}
-                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`rounded-full px-4 py-1.5 text-[12px] font-bold transition-colors ${
                     format === f
-                      ? "bg-zinc-800 text-white"
-                      : "text-zinc-500 hover:text-zinc-300"
+                      ? "bg-accent text-dark"
+                      : "text-bg/40 hover:text-bg/70"
                   }`}
                 >
                   {f === "markdown" ? "Markdown" : "HTML"}
@@ -65,13 +65,13 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
           </div>
 
           <div className="relative">
-            <pre className="overflow-x-auto rounded-xl bg-zinc-950 p-4 text-sm text-emerald-400">
+            <pre className="overflow-x-auto rounded-xl bg-dark/60 p-5 font-mono text-[13px] leading-relaxed text-highlight">
               <code>{code}</code>
             </pre>
             <button
               type="button"
               onClick={handleCopy}
-              className="absolute right-3 top-3 flex items-center gap-2 rounded-lg bg-zinc-800 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-zinc-700"
+              className="group absolute right-3 top-3 flex items-center gap-2 overflow-hidden rounded-full bg-bg px-4 py-2 text-[12px] font-bold text-dark transition-all hover:-translate-y-0.5 active:scale-95"
             >
               <AnimatePresence mode="wait">
                 {copied ? (
@@ -82,7 +82,7 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
                     exit={{ opacity: 0, scale: 0.8 }}
                     className="flex items-center gap-1.5"
                   >
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <Check className="h-3.5 w-3.5 text-dark" />
                     Copied
                   </motion.span>
                 ) : (
@@ -101,9 +101,22 @@ export function EmbedCode({ username, theme }: EmbedCodeProps) {
             </button>
           </div>
 
-          <p className="mt-4 text-center text-sm text-zinc-500">
-            Add this line anywhere in your README.md and your stats will appear automatically.
-          </p>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="h-px flex-1 bg-bg/10" />
+            <p className="text-[12px] font-bold uppercase tracking-widest text-bg/30">
+              Live preview
+            </p>
+            <div className="h-px flex-1 bg-bg/10" />
+          </div>
+
+          <div className="mt-6 flex justify-center overflow-hidden rounded-xl bg-bg/5 p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={buildEmbedUrl(username, theme)}
+              alt="Stats preview"
+              className="max-w-full rounded-lg"
+            />
+          </div>
         </div>
       </div>
     </motion.section>

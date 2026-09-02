@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { TemplateMeta } from "@/types";
+import { SectionLabel, SectionTitle } from "./SectionHeader";
 import { TemplateCard } from "./TemplateCard";
 
 interface TemplateGalleryProps {
@@ -18,26 +19,30 @@ export function TemplateGallery({
   onSelectTheme,
 }: TemplateGalleryProps) {
   return (
-    <section className="px-6 py-16">
-      <div className="mx-auto max-w-6xl">
+    <section id="templates" className="bg-bg px-6 py-24 md:py-28">
+      <div className="mx-auto max-w-7xl">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-16 md:mb-20"
         >
-          <h2 className="font-display text-3xl font-bold text-white md:text-4xl">
-            Choose your style
-          </h2>
-          <p className="mt-3 text-zinc-400">
-            {username
-              ? `Previewing stats for @${username}`
-              : "Enter your username above to see live previews"}
+          <SectionLabel>Templates</SectionLabel>
+          <SectionTitle>Choose your style.</SectionTitle>
+          <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-dark/55">
+            {username ? (
+              <>
+                Showing live previews for{" "}
+                <span className="font-bold text-dark">@{username}</span>
+              </>
+            ) : (
+              "Enter your username above to see your stats rendered in each template."
+            )}
           </p>
         </motion.div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-dark/10 md:grid-cols-2 lg:grid-cols-3">
           {templates.map((template, index) => (
             <TemplateCard
               key={template.id}
