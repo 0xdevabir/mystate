@@ -17,8 +17,11 @@ interface EmbedCodePanelProps {
   theme: string;
   customColors?: CustomThemeColors;
   previewBg?: string;
+  templateWidth?: number;
+  templateHeight?: number;
   showPreview?: boolean;
   variant?: "dark" | "light";
+  layout?: "default" | "modal";
   usernameHint?: string;
 }
 
@@ -28,8 +31,11 @@ export function EmbedCodePanel({
   theme,
   customColors,
   previewBg = "#0d1117",
+  templateWidth,
+  templateHeight,
   showPreview = true,
   variant = "dark",
+  layout = "default",
   usernameHint,
 }: EmbedCodePanelProps) {
   const [copied, setCopied] = useState(false);
@@ -47,6 +53,7 @@ export function EmbedCodePanel({
       : `${previewUser}-${template}-${theme}`;
 
   const isDark = variant === "dark";
+  const isModal = layout === "modal";
 
   async function handleCopy() {
     await navigator.clipboard.writeText(code);
@@ -54,8 +61,54 @@ export function EmbedCodePanel({
     setTimeout(() => setCopied(false), 2000);
   }
 
-  return (
-    <div className="space-y-5">
+  const previewBlock = showPreview ? (
+    <div className={isModal ? "space-y-4" : undefined}>
+      {!isModal && (
+        <div className="flex items-center gap-3">
+          <div className={`h-px flex-1 ${isDark ? "bg-bg/10" : "bg-dark/10"}`} />
+          <p
+            className={`text-[11px] font-bold uppercase tracking-widest ${
+              isDark ? "text-bg/30" : "text-dark/30"
+            }`}
+          >
+            Preview
+          </p>
+          <div className={`h-px flex-1 ${isDark ? "bg-bg/10" : "bg-dark/10"}`} />
+        </div>
+      )}
+
+      {isModal && (
+        <p className="text-[11px] font-bold uppercase tracking-widest text-dark/35">
+          Preview
+        </p>
+      )}
+
+      <div
+        className={`rounded-xl p-3 sm:p-4 ${
+          isDark ? "bg-bg/5" : "border border-dark/8"
+        }`}
+        style={{ backgroundColor: isDark ? undefined : previewBg }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={previewKey}
+            src={buildPreviewUrl(previewUser, template, theme, true, colors)}
+            alt="Stats preview"
+            width={templateWidth}
+            height={templateHeight}
+            className="block h-auto w-full max-w-full rounded-lg"
+            initial={{ opacity: 0, scale: 0.99 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.01 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </AnimatePresence>
+      </div>
+    </div>
+  ) : null;
+
+  const codeBlock = (
+  <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className={`text-[13px] ${isDark ? "text-bg/55" : "text-dark/55"}`}>
           Paste into your{" "}
@@ -65,7 +118,7 @@ export function EmbedCodePanel({
         </p>
 
         <div
-          className={`flex w-fit rounded-full border p-0.5 ${
+          className={`flex w-fit shrink-0 rounded-full border p-0.5 ${
             isDark ? "border-bg/10" : "border-dark/10"
           }`}
         >
@@ -92,7 +145,7 @@ export function EmbedCodePanel({
 
       {!username.trim() && usernameHint && (
         <p
-          className={`rounded-xl px-4 py-2.5 text-[12px] ${
+          className={`rounded-xl px-4 py-2.5 text-[12px] leading-relaxed ${
             isDark
               ? "border border-amber-500/20 bg-amber-500/10 text-amber-200/90"
               : "border border-amber-600/20 bg-amber-500/10 text-amber-900/80"
@@ -103,15 +156,21 @@ export function EmbedCodePanel({
       )}
 
       <div className="relative">
-        <pre
-          className={`overflow-x-auto rounded-xl p-4 font-mono text-[11px] leading-relaxed sm:p-5 sm:text-[12px] ${
+        <div
+          className={`rounded-xl p-4 pr-24 ${
             isDark
-              ? "bg-dark/60 text-highlight"
-              : "border border-dark/8 bg-light/80 text-dark/80"
+              ? "bg-dark/60"
+              : "border border-dark/8 bg-light/80"
           }`}
         >
-          <code>{code}</code>
-        </pre>
+          <code
+            className={`block font-mono text-[11px] leading-relaxed break-all sm:text-[12px] ${
+              isDark ? "text-highlight" : "text-dark/80"
+            }`}
+          >
+            {code}
+          </code>
+        </div>
         <button
           type="button"
           onClick={handleCopy}
@@ -146,42 +205,23 @@ export function EmbedCodePanel({
           </AnimatePresence>
         </button>
       </div>
+    </div>
+  );
 
-      {showPreview && (
-        <>
-          <div className="flex items-center gap-3">
-            <div className={`h-px flex-1 ${isDark ? "bg-bg/10" : "bg-dark/10"}`} />
-            <p
-              className={`text-[11px] font-bold uppercase tracking-widest ${
-                isDark ? "text-bg/30" : "text-dark/30"
-              }`}
-            >
-              Preview
-            </p>
-            <div className={`h-px flex-1 ${isDark ? "bg-bg/10" : "bg-dark/10"}`} />
-          </div>
+  if (isModal) {
+    return (
+      <div className="flex flex-col gap-8">
+        {previewBlock}
+        <div className="h-px bg-dark/8" />
+        {codeBlock}
+      </div>
+    );
+  }
 
-          <div
-            className={`overflow-x-auto rounded-xl p-4 ${
-              isDark ? "bg-bg/5" : "border border-dark/8 bg-dark/[0.02]"
-            }`}
-            style={{ backgroundColor: isDark ? undefined : previewBg }}
-          >
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={previewKey}
-                src={buildPreviewUrl(previewUser, template, theme, true, colors)}
-                alt="Stats preview"
-                className="mx-auto max-w-none rounded-lg"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.01 }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </AnimatePresence>
-          </div>
-        </>
-      )}
+  return (
+    <div className="space-y-5">
+      {codeBlock}
+      {previewBlock}
     </div>
   );
 }

@@ -10,7 +10,7 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
   const name = displayName(stats);
 
   const miniStats = [
-    { icon: "↗", label: "12mo Contribs", value: stats.contributionsLastYear },
+    { icon: "↗", label: "12mo", value: stats.contributionsLastYear },
     { icon: "●", label: "Commits", value: stats.totalCommits },
     { icon: "⑂", label: "PRs", value: stats.totalPullRequests },
     { icon: "◉", label: "Issues", value: stats.totalIssues },
@@ -18,8 +18,12 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
     { icon: "🔥", label: "Streak", value: stats.currentStreak },
   ];
 
+  const sidebarW = 168;
+  const chartX = 24 + sidebarW + 12;
+  const chartW = W - chartX - 24;
+
   const statsCol = miniStats
-    .map((s, i) => statRow(28, 100 + i * 32, s.icon, s.label, s.value, palette))
+    .map((s, i) => statRow(28, 88 + i * 30, s.icon, s.label, s.value, palette))
     .join("");
 
   return `${svgOpen(W, H)}
@@ -27,16 +31,16 @@ export function contribGraph(stats: GitHubStats, palette: ThemePalette): string 
     ${subtleFrame(W, H, palette)}
 
     ${text(28, 36, name, { fill: palette.text, size: 18, weight: 800 })}
-    ${text(28, 56, `@${stats.username} · ${formatNumber(stats.totalLifetimeContributions)} lifetime contributions`, {
+    ${text(28, 56, `@${stats.username} · ${formatNumber(stats.totalLifetimeContributions)} lifetime`, {
       fill: palette.textMuted,
       size: 10,
     })}
 
-    ${card(200, 24, W - 224, H - 48, palette)}
-    ${text(216, 48, "Contribution Activity", { fill: palette.text, size: 11, weight: 700 })}
-    ${areaChart(stats.monthlyContributions, 216, 58, W - 256, H - 100, palette, "cg")}
-
     ${statsCol}
+
+    ${card(chartX, 68, chartW, H - 92, palette)}
+    ${text(chartX + 16, 92, "Contribution Activity", { fill: palette.text, size: 11, weight: 700 })}
+    ${areaChart(stats.monthlyContributions, chartX + 16, 104, chartW - 32, H - 132, palette, "cg")}
     ${text(28, H - 14, "mystate.devabir.me", { fill: palette.textMuted, size: 8, opacity: 0.5 })}
   ${svgClose()}`;
 }
@@ -50,3 +54,4 @@ export const contribGraphMeta = {
   previewBg: "#0d1117",
   category: "premium" as const,
 };
+
