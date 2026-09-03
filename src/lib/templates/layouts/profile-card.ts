@@ -18,11 +18,13 @@ export function profileCard(stats: GitHubStats, palette: ThemePalette): string {
   const name = displayName(stats);
   const fields = allStatFields(stats);
 
+  const gridY = 128;
+  const colW = (W - 40) / 4;
   const statsGrid = fields
     .map((f, i) => {
       const col = i % 4;
       const row = Math.floor(i / 4);
-      return statCell(168 + col * 82, 68 + row * 38, f.label, f.value, palette);
+      return statCell(20 + col * colW, gridY + row * 38, f.label, f.value, palette);
     })
     .join("");
 
@@ -31,10 +33,10 @@ export function profileCard(stats: GitHubStats, palette: ThemePalette): string {
   return `${svgOpen(W, H)}
     ${bgRect(W, H, palette)}
     ${avatar(stats.avatar, 20, 20, 64, palette)}
-    ${text(96, 38, name, { fill: palette.text, size: 16, weight: 700 })}
-    ${text(96, 56, `@${stats.username}`, { fill: palette.textMuted, size: 11 })}
-    ${meta ? text(96, 72, meta.slice(0, 40), { fill: palette.textMuted, size: 9, opacity: 0.8 }) : ""}
-    <line x1="148" y1="20" x2="148" y2="${H - 20}" stroke="${palette.border}" stroke-width="1"/>
+    ${text(96, 40, name, { fill: palette.text, size: 16, weight: 700 })}
+    ${text(96, 58, `@${stats.username}`, { fill: palette.textMuted, size: 11 })}
+    ${meta ? text(96, 76, meta.slice(0, 44), { fill: palette.textMuted, size: 9, opacity: 0.8 }) : ""}
+    <line x1="20" y1="100" x2="${W - 20}" y2="100" stroke="${palette.border}" stroke-width="1"/>
     ${statsGrid}
   <rect x="20" y="${H - 40}" width="${W - 40}" height="32" rx="6" fill="${palette.card}"/>
     ${languageBar(stats.topLanguages, 28, H - 36, W - 56, palette)}

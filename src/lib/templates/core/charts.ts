@@ -363,7 +363,10 @@ export function languageListRows(
   maxItems = 6,
 ): string {
   const items = languages.slice(0, maxItems);
-  const barMaxW = w - 130;
+  const nameW = 104;
+  const pctX = nameW + 12;
+  const barX = pctX + 40;
+  const barMaxW = Math.max(w - barX, 20);
   return items
     .map((lang, i) => {
       const ly = y + i * rowH;
@@ -371,9 +374,9 @@ export function languageListRows(
       return `
       <circle cx="${x}" cy="${ly}" r="4" fill="${lang.color}"/>
       ${text(x + 12, ly + 4, lang.name, { fill: palette.text, size: 10, weight: 600 })}
-      ${text(x + 88, ly + 4, `${lang.percentage}%`, { fill: palette.textMuted, size: 10, anchor: "end" })}
-      <rect x="${x + 100}" y="${ly - 6}" width="${barMaxW}" height="6" rx="2" fill="${palette.border}" opacity="0.35"/>
-      <rect x="${x + 100}" y="${ly - 6}" width="${barW}" height="6" rx="2" fill="${lang.color}"/>`;
+      ${text(x + pctX, ly + 4, `${lang.percentage}%`, { fill: palette.textMuted, size: 10, anchor: "end" })}
+      <rect x="${x + barX}" y="${ly - 6}" width="${barMaxW}" height="6" rx="2" fill="${palette.border}" opacity="0.35"/>
+      <rect x="${x + barX}" y="${ly - 6}" width="${barW}" height="6" rx="2" fill="${lang.color}"/>`;
     })
     .join("");
 }
@@ -412,22 +415,40 @@ export function heatmapStrip(
   h: number,
   palette: ThemePalette,
 ): string {
-  const recent = days.slice(-52);
-  if (recent.length === 0) {
-    const cellW = w / 52;
-    return Array.from({ length: 52 }, (_, i) =>
-      `<rect x="${x + i * cellW}" y="${y}" width="${Math.max(cellW - 1, 1)}" height="${h}" rx="1" fill="${palette.border}" opacity="0.12"/>`,
-    ).join("");
+  const rows = 7;
+  const gap = Math.max(1, Math.min(3, w / 200));
+
+  if (days.length === 0) {
+    const weeks = 52;
+    const cell = Math.min((w - (weeks - 1) * gap) / weeks, (h - (rows - 1) * gap) / rows);
+    const ox = x + (w - (weeks * cell + (weeks - 1) * gap)) / 2;
+    const cells: string[] = [];
+    for (let wk = 0; wk < weeks; wk++) {
+      for (let r = 0; r < rows; r++) {
+        cells.push(
+          `<rect x="${(ox + wk * (cell + gap)).toFixed(1)}" y="${(y + r * (cell + gap)).toFixed(1)}" width="${cell.toFixed(1)}" height="${cell.toFixed(1)}" rx="${Math.min(2, cell / 4).toFixed(1)}" fill="${palette.border}" opacity="0.12"/>`,
+        );
+      }
+    }
+    return cells.join("");
   }
 
-  const cellW = w / recent.length;
+  const recent = days.slice(-364);
+  const first = new Date(recent[0].date);
+  const firstDow = Number.isNaN(first.getTime()) ? 0 : first.getUTCDay();
+  const weeksCount = Math.ceil((firstDow + recent.length) / rows);
+  const cell = Math.min((w - (weeksCount - 1) * gap) / weeksCount, (h - (rows - 1) * gap) / rows);
+  const ox = x + (w - (weeksCount * cell + (weeksCount - 1) * gap)) / 2;
   const max = Math.max(...recent.map((d) => d.count), 1);
 
   return recent
     .map((d, i) => {
+      const idx = i + firstDow;
+      const wk = Math.floor(idx / rows);
+      const r = idx % rows;
       const intensity = d.count / max;
       const opacity = d.count === 0 ? 0.08 : 0.2 + intensity * 0.8;
-      return `<rect x="${x + i * cellW}" y="${y}" width="${Math.max(cellW - 1, 1)}" height="${h}" rx="1" fill="${palette.highlight}" opacity="${opacity}"/>`;
+      return `<rect x="${(ox + wk * (cell + gap)).toFixed(1)}" y="${(y + r * (cell + gap)).toFixed(1)}" width="${cell.toFixed(1)}" height="${cell.toFixed(1)}" rx="${Math.min(2, cell / 4).toFixed(1)}" fill="${palette.highlight}" opacity="${opacity.toFixed(2)}"/>`;
     })
     .join("");
 }
@@ -450,6 +471,88 @@ export function statRow(
         weight: 700,
       })}
     </g>`;
+}
+
+export function radarChart(
+  metrics: { label: string; value: number; max: number }[],
+  cx: number,
+  cy: number,
+  r: number,
+  palette: ThemePalette,
+  uid: string,
+): string {
+  const n = metrics.length;
+  if (n < 3) return "";
+
+  const angleStep = (Math.PI * 2) / n;
+  const startAngle = -Math.PI / 2;
+
+  const point = (i: number, frac: number) => {
+    const angle = startAngle + i * angleStep;
+    return { x: cx + Math.cos(angle) * r * frac, y: cy + Math.sin(angle) * r * frac };
+  };
+
+  const grid = [0.25, 0.5, 0.75, 1]
+    .map((lvl) => {
+      const pts = metrics.map((_, i) => point(i, lvl));
+      const path = `${pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ")} Z`;
+      return `<path d="${path}" fill="none" stroke="${palette.border}" stroke-width="1" opacity="${lvl === 1 ? 0.45 : 0.18}"/>`;
+    })
+    .join("");
+
+  const spokes = metrics
+    .map((_, i) => {
+      const p = point(i, 1);
+      return `<line x1="${cx}" y1="${cy}" x2="${p.x.toFixed(1)}" y2="${p.y.toFixed(1)}" stroke="${palette.border}" stroke-width="1" opacity="0.25"/>`;
+    })
+    .join("");
+
+  const dataPts = metrics.map((m, i) => point(i, Math.max(0.05, Math.min(1, m.max > 0 ? m.value / m.max : 0))));
+  const dataPath = `${dataPts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ")} Z`;
+
+  const labels = metrics
+    .map((m, i) => {
+      const p = point(i, 1.24);
+      const angle = startAngle + i * angleStep;
+      const cos = Math.cos(angle);
+      const anchor = Math.abs(cos) < 0.35 ? "middle" : cos > 0 ? "start" : "end";
+      return text(p.x, p.y, m.label, { fill: palette.textMuted, size: 9, weight: 600, anchor });
+    })
+    .join("");
+
+  return `
+    <defs>
+      <radialGradient id="radar-fill-${uid}" cx="50%" cy="50%" r="70%">
+        <stop offset="0%" stop-color="${palette.chartFill}" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="${palette.chartFill}" stop-opacity="0.06"/>
+      </radialGradient>
+      <filter id="radar-glow-${uid}" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="2.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    ${grid}
+    ${spokes}
+    <path d="${dataPath}" fill="url(#radar-fill-${uid})" stroke="${palette.chartLine}" stroke-width="2" stroke-linejoin="round" filter="url(#radar-glow-${uid})"/>
+    ${dataPts.map((p) => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.5" fill="${palette.chartLine}"/>`).join("")}
+    ${labels}`;
+}
+
+export function ringGauge(
+  cx: number,
+  cy: number,
+  r: number,
+  value: number,
+  max: number,
+  color: string,
+  strokeWidth = 10,
+): string {
+  const circumference = 2 * Math.PI * r;
+  const frac = Math.max(0, Math.min(1, max > 0 ? value / max : 0));
+  const len = frac * circumference;
+  return `
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${strokeWidth}" opacity="0.16"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-dasharray="${len.toFixed(1)} ${(circumference - len).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
 }
 
 export function streakCard(

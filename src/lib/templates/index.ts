@@ -15,6 +15,8 @@ import { languageExpert, languageExpertMeta } from "./layouts/language-expert";
 import { cleanSlate, cleanSlateMeta } from "./layouts/clean-slate";
 import { streakHero, streakHeroMeta } from "./layouts/streak-hero";
 import { heatmapPro, heatmapProMeta } from "./layouts/heatmap-pro";
+import { radarPulse, radarPulseMeta } from "./layouts/radar-pulse";
+import { orbitRings, orbitRingsMeta } from "./layouts/orbit-rings";
 import { CARD_TEMPLATE_ENTRIES } from "./layouts/cards";
 import { PAIR_TEMPLATE_ENTRIES } from "./layouts/pairs";
 
@@ -27,6 +29,8 @@ export const TEMPLATES: Record<
   [languageExpertMeta.id]: { meta: languageExpertMeta, render: languageExpert },
   [streakHeroMeta.id]: { meta: streakHeroMeta, render: streakHero },
   [heatmapProMeta.id]: { meta: heatmapProMeta, render: heatmapPro },
+  [radarPulseMeta.id]: { meta: radarPulseMeta, render: radarPulse },
+  [orbitRingsMeta.id]: { meta: orbitRingsMeta, render: orbitRings },
   [cleanSlateMeta.id]: { meta: cleanSlateMeta, render: cleanSlate },
   [profileCardMeta.id]: { meta: profileCardMeta, render: profileCard },
   [dashboardMeta.id]: { meta: dashboardMeta, render: dashboard },

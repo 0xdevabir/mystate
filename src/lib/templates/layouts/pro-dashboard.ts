@@ -6,7 +6,8 @@ import {
   gradientBorder,
   areaChartPro,
   rankBadge,
-  languageBarGrid,
+  donutChart,
+  languageListRows,
   streakCardPro,
 } from "../core/charts";
 
@@ -118,19 +119,29 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
       size: 14,
       weight: 700,
     })}
-    ${languageBarGrid(stats.topLanguages, rightX + 20, midY + 44, cardW - 40, palette, 8)}
+    ${donutChart(stats.topLanguages, rightX + 74, midY + 128, 50, palette)}
+    ${languageListRows(
+      stats.topLanguages,
+      rightX + 148,
+      midY + 60,
+      cardW - 148 - 20,
+      palette,
+      22,
+      4,
+    )}
 
     ${streakCardPro(
       pad,
       bottomY,
       streakW,
       streakH,
-      "✦",
-      "Total Stars",
-      stats.totalStars,
-      `${stats.publicRepos} repos`,
+      "▦",
+      "Contributions",
+      stats.contributionsLastYear,
+      "last year",
       palette,
       palette.accent,
+      true,
     )}
     ${streakCardPro(
       pad + streakW + gap,
@@ -156,6 +167,7 @@ export function proDashboard(stats: GitHubStats, palette: ThemePalette): string 
       stats.longestStreakRange,
       palette,
       palette.highlight,
+      true,
     )}
 
   ${svgClose()}`;

@@ -78,12 +78,13 @@ export function pairGraphStats(stats: GitHubStats, palette: ThemePalette): strin
     { label: "Followers", value: stats.followers },
   ];
 
+  const statsRightW = rightW - 32;
   const statsSvg = statLines
     .map((s, i) => {
-      const y = 88 + i * 28;
+      const y = 100 + i * 26;
       return `
         ${text(rightX + 16, y, s.label, { fill: palette.textMuted, size: 10 })}
-        ${text(rightX + rightW - 16, y, formatNumber(s.value), {
+        ${text(rightX + 16 + statsRightW, y, formatNumber(s.value), {
           fill: palette.text,
           size: 12,
           weight: 700,
@@ -105,8 +106,8 @@ export function pairGraphStats(stats: GitHubStats, palette: ThemePalette): strin
 
     ${card(rightX, 60, rightW, 132, palette)}
     ${text(rightX + 16, 80, "GitHub Stats", { fill: palette.text, size: 11, weight: 700 })}
+    ${rankBadge(rightX + rightW - 24, 82, stats.rank, palette, 26)}
     ${statsSvg}
-    ${rankBadge(rightX + rightW - 40, 130, stats.rank, palette, 32)}
   `,
   );
 }
