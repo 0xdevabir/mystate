@@ -531,12 +531,7 @@ async function withEmbeddedAvatar(stats: GitHubStats): Promise<GitHubStats> {
   return avatar === stats.avatar ? stats : { ...stats, avatar };
 }
 
-export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
-  const clean = username.trim().toLowerCase();
-  if (!clean || !/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(clean)) {
-    throw new Error("INVALID_USERNAME");
-  }
-
+async function fetchGitHubStatsUncached(clean: string): Promise<GitHubStats> {
   const token = getGitHubToken();
   if (token) {
     try {
@@ -549,4 +544,40 @@ export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
   }
 
   return withEmbeddedAvatar(await fetchViaREST(clean));
+}
+
+/**
+ * Loading the template gallery fires one request per template (7+ for a
+ * single category) for the same user. Without this, that's 7+ duplicate
+ * live GraphQL fetches to GitHub in parallel on every gallery load. This
+ * coalesces concurrent/near-concurrent requests for the same username into
+ * a single upstream fetch, shared via the in-flight promise, then keeps the
+ * result around briefly so switching categories doesn't re-fetch either.
+ */
+const STATS_CACHE_TTL_MS = 90_000;
+const statsCache = new Map<string, { promise: Promise<GitHubStats>; expires: number }>();
+
+function getFreshCacheEntry(clean: string) {
+  const entry = statsCache.get(clean);
+  if (!entry) return undefined;
+  if (Date.now() > entry.expires) {
+    statsCache.delete(clean);
+    return undefined;
+  }
+  return entry;
+}
+
+export async function fetchGitHubStats(username: string): Promise<GitHubStats> {
+  const clean = username.trim().toLowerCase();
+  if (!clean || !/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(clean)) {
+    throw new Error("INVALID_USERNAME");
+  }
+
+  const cached = getFreshCacheEntry(clean);
+  if (cached) return cached.promise;
+
+  const promise = fetchGitHubStatsUncached(clean);
+  statsCache.set(clean, { promise, expires: Date.now() + STATS_CACHE_TTL_MS });
+  promise.catch(() => statsCache.delete(clean));
+  return promise;
 }
